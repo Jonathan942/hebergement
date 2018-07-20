@@ -132,16 +132,15 @@
                 <?php 
                 if (isset($dispos)) {
                     $i=0;
-                    foreach ($dispos as $date_dispo => $place_dispo) { 
-                        $date_affichee=date_parse($date_dispo); ?>
+                    foreach ($dispos as $date_dispo => $place_dispo) { ?>
                         <div class="input-group">
-                            <label for="mes_places"><?php echo $date_affichee['day']."/".$date_affichee['month']." :"; ?></label>
+                            <label for="mes_places"><?php echo $date_dispo." :"; ?></label>
                             <input class="form-control" type="number" id="mes_places" min="0" max="10" step="1" name="date_<?php echo $i; ?>" value="<?php echo $place_dispo; ?>">
                         </div>
                     <?php 
                     $i++; }
                 }?>
-                <button class="btn" type="submit" name="modifier">Mettre à jour mes disponibilités</button>
+                <button class="btn" type="submit" name="modif_dispos">Mettre à jour mes disponibilités</button>
             </fieldset>
         </form>
 
@@ -152,11 +151,10 @@
                 <?php 
                 // le tableau $dispo_reseau regroupe toutes les informations concernant les disponibilités (totales ou par id) par date, dans mon réseau
                 $j=0;
-                foreach ($dispos_reseau['dates'] as $date_dispo) {
-                    $date_affichee=date_parse($date_dispo); ?>
+                foreach ($dispos_reseau['dates'] as $date_dispo) { ?>
                     <div class="input-group">
                         <!-- lien qui permet d'ouvrir une fenêtre avec le détail -->
-                        <a href="" data-toggle="modal" data-target="#detail_<?php echo $j;?>"><?php echo $date_affichee['day']."/".$date_affichee['month']." : ";?></a>
+                        <a href="" data-toggle="modal" data-target="#detail_<?php echo $j;?>"><?php echo $date_dispo." : ";?></a>
                         <input class="form-control" type="text" value="<?php echo $dispos_reseau['total'][$j];?>" disabled>
                         <div class="input-group-btn">
                             <button type="submit" name="suppr_date_<?php echo $j;?>" class="btn" value="date_<?php echo $j; ?>">&times;</button>
@@ -168,7 +166,7 @@
                             <div class="modal-dialog">
                                 <div class="modal-content">
                                   <div class="modal-header">
-                                    <h4 class="modal-title">Détail des disponibilités pour le <?php echo $date_affichee['day']."/".$date_affichee['month'];?></h4>
+                                    <h4 class="modal-title">Détail des disponibilités pour le <?php echo $date_dispo;?></h4>
                                     <button type="button" class="close" data-dismiss="modal">&times;</button>
                                   </div>
                                   <div class="modal-body">
