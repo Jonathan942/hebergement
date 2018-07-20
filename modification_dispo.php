@@ -4,8 +4,8 @@
 if (isset($_POST['modif_dispos'])){
     include_once('connexion_sql.php');
 
-    //mise dans un tableau $nouv_dispo de toutes les infos à modifier/insérer dans la table dates
-    // rappel ordre de dates : id_dates, id_profil, date_choix, date_0, date_1 ... date_13 
+    //mise dans un tableau $nouv_dispo de toutes les infos à modifier/insérer dans la table disponibilite
+    // rappel ordre de disponibilite : id_dispo, id_profil, date_choix, date_0, date_1 ... date_13 
     $ajd=date('Y-m-d');
     $nouv_dispo['date_choix']=$ajd;
     for ($i=0; $i < 7 ; $i++) {
@@ -13,8 +13,8 @@ if (isset($_POST['modif_dispos'])){
         $nouv_dispo['date_'.$i] = htmlspecialchars($_POST['date_'.$i]);
     }
 
-    // on vérifie si l'id existe déjà dans la table dates (si a déjà rempli des dispos par le passé)
-    $req_existe=$bdd->prepare('SELECT id_profil FROm dates WHERE id_profil=?');
+    // on vérifie si l'id existe déjà dans la table disponibilite (si a déjà rempli des dispos par le passé)
+    $req_existe=$bdd->prepare('SELECT id_profil FROm disponibilite WHERE id_profil=?');
     $req_existe-> execute(array($_SESSION['id_profil']));
     $existe=$req_existe->fetch();
 
@@ -28,7 +28,7 @@ if (isset($_POST['modif_dispos'])){
         $phrase_modif=substr($phrase_modif, 1);
         //on met l'élément id_profil à la fin du tableau pour raison de syntaxe SQL
         $nouv_dispo['id_profil']=$_SESSION['id_profil'];
-        $req_modif_dispo=$bdd->prepare('UPDATE dates SET '.$phrase_modif.' WHERE id_profil=:id_profil');
+        $req_modif_dispo=$bdd->prepare('UPDATE disponibilite SET '.$phrase_modif.' WHERE id_profil=:id_profil');
         $req_modif_dispo->execute($nouv_dispo);
     } else {
         // si l'id n'existe pas déjà : insérer une ligne avec toutes les données à initialiser
@@ -43,7 +43,7 @@ if (isset($_POST['modif_dispos'])){
         $champs_init=substr($champs_init, 1);
         $valeurs_init=substr($valeurs_init, 1);
 
-        $req_insert_dispo=$bdd->prepare('INSERT INTO dates ('.$champs_init.') VALUES ('.$valeurs_init.')');
+        $req_insert_dispo=$bdd->prepare('INSERT INTO disponibilite ('.$champs_init.') VALUES ('.$valeurs_init.')');
         $req_insert_dispo->execute($nouv_dispo);
     }
 } 

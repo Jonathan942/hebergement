@@ -42,7 +42,7 @@
     <?php } else {
         include_once('informations_profil.php'); 
         include_once('informations_dispo.php');
-        include_once('information_reseau.php'); ?>            
+        include_once('informations_reseau.php'); ?>            
         
         <h1>Bienvenu·e <?php echo $infos['nom_prenom'];?></h1>
         
@@ -130,9 +130,9 @@
         <form action="modification_dispo.php" method="post" class="collapse" id="mes_dispos">
             <fieldset>
                 <?php 
-                if (isset($dispos)) {
+                if (isset($mes_dispos)) {
                     $i=0;
-                    foreach ($dispos as $date_dispo => $place_dispo) { ?>
+                    foreach ($mes_dispos as $date_dispo => $place_dispo) { ?>
                         <div class="input-group">
                             <label for="mes_places"><?php echo $date_dispo." :"; ?></label>
                             <input class="form-control" type="number" id="mes_places" min="0" max="10" step="1" name="date_<?php echo $i; ?>" value="<?php echo $place_dispo; ?>">
@@ -149,13 +149,13 @@
         <form action="modification_dispo_reseau.php" method="post" class="collapse" id="dispos_reseau"> 
             <fieldset>
                 <?php 
-                // le tableau $dispo_reseau regroupe toutes les informations concernant les disponibilités (totales ou par id) par date, dans mon réseau
+                // le tableau $dispo_amis regroupe toutes les informations concernant les disponibilités (totales ou par id) par date, dans mon réseau
                 $j=0;
-                foreach ($dispos_reseau['dates'] as $date_dispo) { ?>
+                foreach ($dispos_amis['dates'] as $date_dispo) { ?>
                     <div class="input-group">
                         <!-- lien qui permet d'ouvrir une fenêtre avec le détail -->
                         <a href="" data-toggle="modal" data-target="#detail_<?php echo $j;?>"><?php echo $date_dispo." : ";?></a>
-                        <input class="form-control" type="text" value="<?php echo $dispos_reseau['total'][$j];?>" disabled>
+                        <input class="form-control" type="text" value="<?php echo $dispos_amis['total'][$j];?>" disabled>
                         <div class="input-group-btn">
                             <button type="submit" name="suppr_date_<?php echo $j;?>" class="btn" value="date_<?php echo $j; ?>">&times;</button>
                         </div>
