@@ -146,7 +146,7 @@
 
         <h2>Les disponibilités dans mon réseau :</h2>
         <button class="btn" data-toggle="collapse" data-target="#dispos_reseau">Dispos</button>
-        <form action="modification_dispo_reseau.php" method="post" class="collapse" id="dispos_reseau"> 
+        <form action="modification_reseau.php" method="post" class="collapse" id="dispos_reseau"> 
             <fieldset>
                 <?php 
                 // le tableau $dispo_amis regroupe toutes les informations concernant les disponibilités (totales ou par id) par date, dans mon réseau
@@ -156,9 +156,6 @@
                         <!-- lien qui permet d'ouvrir une fenêtre avec le détail -->
                         <a href="" data-toggle="modal" data-target="#detail_<?php echo $j;?>"><?php echo $date_dispo." : ";?></a>
                         <input class="form-control" type="text" value="<?php echo $dispos_amis['total'][$j];?>" disabled>
-                        <div class="input-group-btn">
-                            <button type="submit" name="suppr_date_<?php echo $j;?>" class="btn" value="date_<?php echo $j; ?>">&times;</button>
-                        </div>
                         
                         <!-- fenêtre qui s'ouvre avec le détail des dispos pour le jour cliqué.
                         Soit on laisse cette modal ainsi, dans la boucle foreach, et on en crée autant qu'il y a de dates à cliquer ; soit on en fait une qui va chercher les détails via une autre page avec un GET -->
