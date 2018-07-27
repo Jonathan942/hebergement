@@ -13,7 +13,8 @@
     
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
-    
+
+
     <title>Hébergement solidaire 13</title>
   </head>
   <body>
@@ -125,11 +126,10 @@
                 <button type="submit" name="modif_mdp" class="btn">Changer mon mot de passe</button>
             </div>
         </form>
-
-        <h2>Voir/modifier mes dispos :</h2>
-        <button class="btn" data-toggle="collapse" data-target="#mes_dispos">Dispos</button>
+        <button class="btn btn-primary" data-toggle="collapse" data-target="#mes_dispos">Disponibilités pour héberger</button>
         <form action="modification_dispo.php" method="post" class="collapse" id="mes_dispos">
             <fieldset>
+
                 <?php 
                 if (isset($mes_dispos)) {
                     $i=0;
@@ -143,7 +143,7 @@
                 }?>
                 <button class="btn" type="submit" name="modif_dispos">Mettre à jour mes disponibilités</button>
             </fieldset>
-        </form>
+        </form>        
 
         <h2>Les disponibilités dans mon réseau :</h2>
         <button class="btn" data-toggle="collapse" data-target="#dispos_reseau">Dispos</button>
@@ -185,7 +185,7 @@
         </form>
 
         <h2>Pour inscrire une nouvelle personne : </h2>
-        <button class="btn" data-toggle="collapse" data-target="#ajout">Parrainer</button>
+        <button class="btn" data-toggle="collapse" data-target="#ajout">Parrainer une nouvelle personne</button>
         <form method="post" action="ajout_profil.php" class="collapse" id="ajout">
             <fieldset>
                 <div class="form-group">
@@ -215,6 +215,7 @@
                 <button type="submit" name="ajout_infos" class="btn">Inscrire cette personne</button>
             </fieldset>           
         </form>
+      
     <?php } ?>
     
     <!-- Optional JavaScript -->
@@ -223,26 +224,21 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
     <script type="text/javascript">
-        function surligne(champ, erreur)
-        {
-           if(erreur)
-              champ.style.backgroundColor = "#FFD9CF";
-           else
-              champ.style.backgroundColor = "";
+        function surligne(champ, erreur) {
+            if(erreur)
+                champ.style.backgroundColor = "#FFD9CF";
+            else
+                champ.style.backgroundColor = "";
         }
          
-        function verifMdp(champ, nom)
-        {
-           if(champ.value != document.getElementById(nom).value)
-           {
-              surligne(champ, true);
-              return false;
-           }
-           else
-           {
-              surligne(champ, false);
-              return true;
-           }
+        function verifMdp(champ, nom) {
+            if(champ.value != document.getElementById(nom).value) {
+                surligne(champ, true);
+                return false;
+            } else {
+                surligne(champ, false);
+                return true;
+            }
         }
     </script>
   </body>

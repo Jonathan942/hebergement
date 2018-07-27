@@ -1,6 +1,4 @@
 <?php 
-
-// ordre de la table disponibilite : id_dispo, id_profil, date_choix, date_0, date_1 ... date_13
 // date_choix correspond la date à laquelle la personne à choisi/modifié ses disponibilités
 $recup_dispos=$bdd->prepare('SELECT *, DATEDIFF(CURRENT_DATE(),date_choix) as intervalle FROM disponibilite WHERE id_profil=?');
 $recup_dispos->execute(array($_SESSION['id_profil']));
