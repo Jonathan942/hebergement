@@ -12,7 +12,9 @@
 	<META http-equiv="Pragma" CONTENT="no-cache">
     
     <!-- Bootstrap CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">    
+    <!-- pour affichage calendrier pour disponibilités -->
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/css/bootstrap-datepicker.min.css">
 
 
     <title>Hébergement solidaire 13</title>
@@ -146,10 +148,20 @@
         </form>        
 
         <h2>Les disponibilités dans mon réseau :</h2>
-        <button class="btn" data-toggle="collapse" data-target="#dispos_reseau">Dispos</button>
-        <form action="modification_reseau.php" method="post" class="collapse" id="dispos_reseau"> 
+        <form action="modification_reseau.php" method="post"> 
             <fieldset>
-                <?php 
+                <div class="col-sm-3">
+                    <div class="form-group">
+                        <div class="input-group date" data-provide="datepicker">
+                            <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                            <input type="tex"' class="form-control" placeholder="Date">
+                            <div class="input-group-btn">
+                                <button class="btn btn-default" type="submit">Voir</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                    <?php 
                 // le tableau $dispo_amis regroupe toutes les informations concernant les disponibilités (totales ou par id) par date, dans mon réseau
                 $j=0;
                 foreach ($dispos_amis['dates'] as $date_dispo) { ?>
@@ -220,9 +232,14 @@
     
     <!-- Optional JavaScript -->
     <!-- jQuery first, then Popper.js, then Bootstrap JS -->
-    <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js" integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN" crossorigin="anonymous"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js" integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q" crossorigin="anonymous"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js" integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl" crossorigin="anonymous"></script>
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" crossorigin="anonymous"></script>
+
+    <!-- pour affichage calendrier pour disponibilités -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/js/bootstrap-datepicker.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.8.0/locales/bootstrap-datepicker.fr.min.js"></script>
+
     <script type="text/javascript">
         function surligne(champ, erreur) {
             if(erreur)
@@ -240,6 +257,12 @@
                 return true;
             }
         }
+
+        $(function () {
+            $.fn.datepicker.defaults.format = "dd/mm/yyyy";
+            $.fn.datepicker.defaults.language = "fr";
+            $.fn.datepicker.defaults.todayHighlight = "true";
+        });
     </script>
   </body>
 </html>
