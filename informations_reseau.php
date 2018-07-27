@@ -5,7 +5,7 @@ Dans un 2e temps, à partir d'un nombre seuil (à définir, mais important) de p
 
 
 // regrouper les places dans $dispos_amis, pour un affichage par date
-$dispos_amis=array('dates'=>'','id'=>'','total'=>'');
+$dispos_amis=array('dates'=>'','id_et_places'=>'','total'=>'');
 $date_dispo=date('d-m-Y');
 for ($i=0; $i < 7 ; $i++) {
     // mise en forme de la date pour affichage
@@ -16,9 +16,9 @@ for ($i=0; $i < 7 ; $i++) {
     $date_dispo=date('d-m-Y', strtotime($date_dispo.' + 1 DAY'));
 } 
 
-//il faut trier les résultats en mettant en premier les personnes qui appartiennent aux mêmes organisations
-// on va faire 3 requêtes, d'abord les personnes qui appartiennent aux mêmes orgas, puis celles qui non, puis celles qui n'appartiennent à aucune orga ; on met les 3 tableaux-résultats à la suite l'un de l'autre
-// sinon on fait 2 req : d'abord les personnes qui appartiennent aux mêmes orgas (en récupérant leur id), puis toutes les autres dans la table disponibilite (en mettant en critère d'exclusion les id récupérés précédemment)
+/* On trie les résultats en mettant en premier les personnes qui appartiennent aux mêmes organisations, pour cela on fait 2 requêtes: d'abord les personnes qui appartiennent aux mêmes orgas (en récupérant leur id), puis toutes les autres dans la table disponibilite (en mettant en critère d'exclusion les id récupérés précédemment)*/
+
+// 1ere requête
 $critere_rech="";
 $tableau_rech=array();
 if (isset($_SESSION['orgas_appartenance'])){
@@ -32,20 +32,40 @@ if (isset($_SESSION['orgas_appartenance'])){
     $critere_rech=$critere_rech.") AND";
 }
 $tableau_rech[]=$_SESSION['id_profil'];
-// on fait attention à ne pas se compter, ni compter plusieurs fois les personnes qui appartiennent à plusieurs mêmes orgas que nous
-$recup_dispos_reseau=$bdd->prepare('SELECT d.*, DATEDIFF(CURRENT_DATE(),d.date_choix) as intervalle FROM disponibilite AS d JOIN jonction_profil_organisation AS j ON d.id_profil=j.id_profil WHERE '.$critere_rech.' j.id_profil!=?');
-$recup_dispos_reseau->execute($tableau_rech);
-//PROBLEME A RESOUDRE : ça ne compte pas celleux qui ne sont pas dans table jonction_profil_organisation
-while ($dispos_reseau=$recup_dispos_reseau->fetch()) {
+// on fait attention à ne pas se compter => ok
+// ni compter plusieurs fois les personnes qui appartiennent à plusieurs mêmes orgas que nous => GROUP BY
+$recup_dispos_orga=$bdd->prepare('SELECT d.*, DATEDIFF(CURRENT_DATE(),d.date_choix) as intervalle FROM disponibilite AS d JOIN jonction_profil_organisation AS j ON d.id_profil=j.id_profil WHERE '.$critere_rech.' j.id_profil!=? GROUP BY d.id_dispo');
+$recup_dispos_orga->execute($tableau_rech);
+$dispos_orga=$recup_dispos_orga->fetchAll();
+
+// 2e requete 
+$tableau_excl=array();
+$critere_excl="";
+//$dispos_orga est vide si pas d'ami-es de la même orga disponibles, mais n'est pas vide si on n'a pas renseigné d'orga
+if (!empty($dispos_orga)) {
+    foreach ($dispos_orga as $entree) {
+        $tableau_excl[]=$entree['id_profil'];
+        $critere_excl=$critere_excl."id_profil!=? AND ";
+    }
+} 
+$tableau_excl[]=$_SESSION['id_profil'];
+
+$recup_dispos_autre=$bdd->prepare('SELECT *, DATEDIFF(CURRENT_DATE(),date_choix) as intervalle FROM disponibilite WHERE '.$critere_excl.' id_profil!=?');
+$recup_dispos_autre->execute($tableau_excl);
+$dispos_autre=$recup_dispos_autre->fetchAll();
+
+//on fusionne les 2 tableaux, avec en premier celui des résultats de la recherche par orga
+$dispos_reseau=array_merge($dispos_orga,$dispos_autre);
+foreach ($dispos_reseau as $entree) {
     for ($j=0; $j < 7 ; $j++) {
-        $num=$j+$dispos_reseau['intervalle'];
-        if (isset($dispos_reseau['date_'.$num]) AND is_numeric($dispos_reseau['date_'.$num])) {
-            $place_dispo=$dispos_reseau['date_'.$num];
+        $num=$j+$entree['intervalle'];
+        if (isset($entree['date_'.$num]) AND is_numeric($entree['date_'.$num])) {
+            $place_dispo=$entree['date_'.$num];
         }else{
             $place_dispo="";
         }
-        /* Si on fait un affichage des disponibilités qui est borné au jour voulu, on a besoin (pour éviter une autre req dans la même table) de stocker dès à présent le nombre de place dispo pour ce jour donné. Mais si on veut un affichage des disponibilités (en détail, après un clic sur une date), qui affiche les autres disponibilités de ce même id, alors pas besoin*/
-        $dispos_amis['id'][$j][$dispos_reseau['id_profil']]=$place_dispo;
+        //on met par id le nombre de place, pour affichage par carte peut-être
+        $dispos_amis['id_et_places'][$j][$entree['id_profil']]=$place_dispo;
         if (isset($dispos_amis['total'][$j])) {
             // si d'autres personnes ont aussi des dispos à cette date, on les rajoute
             $dispos_amis['total'][$j]=$dispos_amis['total'][$j]+$place_dispo;
@@ -55,5 +75,4 @@ while ($dispos_reseau=$recup_dispos_reseau->fetch()) {
         }
     } 
 }
-
 ?>
