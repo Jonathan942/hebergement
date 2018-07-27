@@ -16,8 +16,26 @@ for ($i=0; $i < 7 ; $i++) {
     $date_dispo=date('d-m-Y', strtotime($date_dispo.' + 1 DAY'));
 } 
 
-$recup_dispos_reseau=$bdd->prepare('SELECT *, DATEDIFF(CURRENT_DATE(),date_choix) as intervalle FROM disponibilite WHERE id_profil!=?');
-$recup_dispos_reseau->execute(array($_SESSION['id_profil']));
+//il faut trier les résultats en mettant en premier les personnes qui appartiennent aux mêmes organisations
+// on va faire 3 requêtes, d'abord les personnes qui appartiennent aux mêmes orgas, puis celles qui non, puis celles qui n'appartiennent à aucune orga ; on met les 3 tableaux-résultats à la suite l'un de l'autre
+// sinon on fait 2 req : d'abord les personnes qui appartiennent aux mêmes orgas (en récupérant leur id), puis toutes les autres dans la table disponibilite (en mettant en critère d'exclusion les id récupérés précédemment)
+$critere_rech="";
+$tableau_rech=array();
+if (isset($_SESSION['orgas_appartenance'])){
+    // mes orgas d'appartenance sont en clef de $_SESSION['orgas_appartenance'] 
+    $tableau_rech=array_keys($_SESSION['orgas_appartenance']);
+    $critere_rech="(";
+    for ($i=0; $i < count($_SESSION['orgas_appartenance']) ; $i++) { 
+        $critere_rech = $critere_rech."j.id_orga=? OR ";
+    }
+    $critere_rech=substr($critere_rech, 0, -3);
+    $critere_rech=$critere_rech.") AND";
+}
+$tableau_rech[]=$_SESSION['id_profil'];
+// on fait attention à ne pas se compter, ni compter plusieurs fois les personnes qui appartiennent à plusieurs mêmes orgas que nous
+$recup_dispos_reseau=$bdd->prepare('SELECT d.*, DATEDIFF(CURRENT_DATE(),d.date_choix) as intervalle FROM disponibilite AS d JOIN jonction_profil_organisation AS j ON d.id_profil=j.id_profil WHERE '.$critere_rech.' j.id_profil!=?');
+$recup_dispos_reseau->execute($tableau_rech);
+//PROBLEME A RESOUDRE : ça ne compte pas celleux qui ne sont pas dans table jonction_profil_organisation
 while ($dispos_reseau=$recup_dispos_reseau->fetch()) {
     for ($j=0; $j < 7 ; $j++) {
         $num=$j+$dispos_reseau['intervalle'];
