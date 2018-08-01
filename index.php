@@ -45,7 +45,7 @@
     <?php } else {
         include_once('informations_profil.php'); 
         include_once('informations_dispo.php');
-        include_once('informations_reseau.php'); ?>            
+        include('informations_reseau.php'); ?>            
         
         <h1>Bienvenu·e <?php echo $infos['nom_prenom'];?></h1>
         
@@ -131,70 +131,70 @@
         <button class="btn btn-primary" data-toggle="collapse" data-target="#mes_dispos">Disponibilités pour héberger</button>
         <form action="modification_dispo.php" method="post" class="collapse" id="mes_dispos">
             <fieldset>
-
-                <?php 
-                if (isset($mes_dispos)) {
-                    $i=0;
-                    foreach ($mes_dispos as $date_dispo => $place_dispo) { ?>
-                        <div class="input-group">
-                            <label for="mes_places"><?php echo $date_dispo." :"; ?></label>
-                            <input class="form-control" type="number" id="mes_places" min="0" max="10" step="1" name="date_<?php echo $i; ?>" value="<?php echo $place_dispo; ?>">
+                <div class="form-inline">
+                    <div class="form-group">
+                        <label for="date_debut">Du</label>
+                        <div class="input-group date" data-provide="datepicker">
+                            <input type="text" class="form-control" id="date_debut" name="date_debut" required/>
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
                         </div>
-                    <?php 
-                    $i++; }
-                }?>
-                <button class="btn" type="submit" name="modif_dispos">Mettre à jour mes disponibilités</button>
+                        <label for="date_fin">au</label>
+                        <div class="input-group date" data-provide="datepicker">
+                        <!-- probleme : comment faire pour que la date se mette par défaut le lendemain de la date_debut-->
+                            <input type="text" class="form-control" id="date_fin" name="date_fin"/>
+                            <span class="input-group-addon">
+                                <span class="glyphicon glyphicon-calendar"></span>
+                            </span>
+                        </div>
+                        
+                        <label for="nb_places">Nombre de places</label>
+                        <input class="form-control" type="number" id="nb_places" name="nb_places" min="0" max="10" step="1" required>
+                        <button class="btn btn-default" type="submit" name="ajout_dispo">Ajouter</button>
+                    </div>
+                </div>
             </fieldset>
+        </form> 
+        <form action="modification_dispo.php" method="post" class="collapse" id="mes_dispos">
+                <!-- le tableau $dispos regroupe toutes mes disponibilites -->
+                <?php foreach ($dispos as $cle => $tableau) { ?>
+                    <div class="input-group">
+                        <input type="text" class="form-control" value="<?php echo 'Du '.$tableau['date_debut'].' au '.$tableau['date_fin'].' ('.$tableau['nb_jours'].' jours) : '.$tableau['nb_places'].' places';?>" disabled>
+                        <span class="input-group-btn">
+                            <button type="submit" name="suppr_dispo" class="btn" value="<?php echo $cle;?>"">&times;</button>
+                        </span>
+                    </div>
+                <?php } ?>
         </form>        
 
         <h2>Les disponibilités dans mon réseau :</h2>
-        <form action="modification_reseau.php" method="post"> 
-            <fieldset>
-                <div class="col-sm-3">
-                    <div class="form-group">
-                        <div class="input-group date" data-provide="datepicker">
-                            <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
-                            <input type="tex"' class="form-control" placeholder="Date">
-                            <div class="input-group-btn">
-                                <button class="btn btn-default" type="submit">Voir</button>
-                            </div>
+        <form method="get" action="">
+            <div class="col-sm-3">
+                <div class="form-group">
+                    <div class="input-group date" data-provide="datepicker">
+                        <span class="input-group-addon"><i class="glyphicon glyphicon-calendar"></i></span>
+                        <input type="text" class="form-control" placeholder="Choisir une date" name="date_choisie" required=""/>
+                        <div class="input-group-btn">
+                            <button type="submit" class="btn btn-default">Voir</a>
                         </div>
                     </div>
                 </div>
-                    <?php 
-                // le tableau $dispo_amis regroupe toutes les informations concernant les disponibilités (totales ou par id) par date, dans mon réseau
-                $j=0;
-                foreach ($dispos_amis['dates'] as $date_dispo) { ?>
-                    <div class="input-group">
-                        <!-- lien qui permet d'ouvrir une fenêtre avec le détail -->
-                        <a href="" data-toggle="modal" data-target="#detail_<?php echo $j;?>"><?php echo $date_dispo." : ";?></a>
-                        <input class="form-control" type="text" value="<?php echo $dispos_amis['total'][$j];?>" disabled>
-                        
-                        <!-- fenêtre qui s'ouvre avec le détail des dispos pour le jour cliqué.
-                        Soit on laisse cette modal ainsi, dans la boucle foreach, et on en crée autant qu'il y a de dates à cliquer ; soit on en fait une qui va chercher les détails via une autre page avec un GET -->
-                        <div class="modal fade" id="detail_<?php echo $j;?>" role="dialog">
-                            <div class="modal-dialog">
-                                <div class="modal-content">
-                                  <div class="modal-header">
-                                    <h4 class="modal-title">Détail des disponibilités pour le <?php echo $date_dispo;?></h4>
-                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
-                                  </div>
-                                  <div class="modal-body">
-                                    <p>
-                                        <!-- à compléter -->
-                                    </p>
-                                  </div>
-                                  <div class="modal-footer">
-                                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                                  </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                <?php 
-                $j++; } ?>
-            </fieldset>
+            </div>
         </form>
+        <form method="get" action="">
+            <!-- le tableau $dispos_reseau regroupe toutes les disponibilites de mon réseau -->
+            <?php foreach ($dispos_reseau as $cle => $tableau) { ?>
+                <div class="input-group">
+                    <input type="text" class="form-control" value="<?php echo 'id = '.$tableau['id_profil'].' => Du '.$tableau['date_debut'].' au '.$tableau['date_fin'].' ('.$tableau['nb_jours'].' jours) : '.$tableau['nb_places'].' places';?>" disabled>
+                    <span class="input-group-btn">
+                        <button type="submit" name="suppr_dispo" class="btn" value="<?php echo $cle;?>"">&times;</button>
+                    </span>
+                </div>
+            <?php } ?>
+        </form>
+
+        
 
         <h2>Pour inscrire une nouvelle personne : </h2>
         <button class="btn" data-toggle="collapse" data-target="#ajout">Parrainer une nouvelle personne</button>
@@ -263,6 +263,7 @@
             $.fn.datepicker.defaults.language = "fr";
             $.fn.datepicker.defaults.todayHighlight = "true";
         });
+    
     </script>
   </body>
 </html>

@@ -1,52 +1,44 @@
 <?php session_start();
-
-// if nécessaire ? 
-if (isset($_POST['modif_dispos'])){
-    include_once('connexion_sql.php');
-
-    //mise dans un tableau $nouv_dispo de toutes les infos à modifier/insérer dans la table disponibilite
-    // rappel ordre de disponibilite : id_dispo, id_profil, date_choix, date_0, date_1 ... date_13 
+include_once('connexion_sql.php');
+if (isset($_POST['ajout_dispo'])){
     $ajd=date('Y-m-d');
-    $nouv_dispo['date_choix']=$ajd;
-    for ($i=0; $i < 7 ; $i++) {
-        // htmlspecialchars nécessaire? (l'entrée est conditionnée par un input type="number")
-        $nouv_dispo['date_'.$i] = htmlspecialchars($_POST['date_'.$i]);
+    $date_debut=htmlspecialchars($_POST['date_debut']);
+    $date_split=explode("/", $date_debut);
+    $date_debut=$date_split[2]."-".$date_split[1]."-".$date_split[0];
+    if (!empty($_POST['date_fin'])){
+        $date_fin=htmlspecialchars($_POST['date_fin']);
+        $date_split=explode("/", $date_fin);
+        $date_fin=$date_split[2]."-".$date_split[1]."-".$date_split[0];
+    } else {
+        $date_fin=date('Y-m-d', strtotime($date_debut.' + 1 DAY'));
     }
 
-    // on vérifie si l'id existe déjà dans la table disponibilite (si a déjà rempli des dispos par le passé)
-    $req_existe=$bdd->prepare('SELECT id_profil FROm disponibilite WHERE id_profil=?');
-    $req_existe-> execute(array($_SESSION['id_profil']));
-    $existe=$req_existe->fetch();
-
-    /* les phrases permettent d'adapter ensuite rapidement le code si l'on veut un affichage différent de 7 jours */
-    if (!empty($existe)) {
-        // si l'id existe : modifier la ligne correspondante
-        $phrase_modif="";
-        foreach ($nouv_dispo as $date_dispo => $place_dispo) {
-            $phrase_modif=$phrase_modif.",".$date_dispo."=:".$date_dispo;
-        }
-        $phrase_modif=substr($phrase_modif, 1);
-        //on met l'élément id_profil à la fin du tableau pour raison de syntaxe SQL
-        $nouv_dispo['id_profil']=$_SESSION['id_profil'];
-        $req_modif_dispo=$bdd->prepare('UPDATE disponibilite SET '.$phrase_modif.' WHERE id_profil=:id_profil');
-        $req_modif_dispo->execute($nouv_dispo);
+    //vérification que la date_début est >= à ajourd'hui et que date_fin >= à date_debut   
+    if ((strtotime($date_debut)-strtotime($ajd))<0){
+        $_SESSION['erreur_dispo']="la date choisie est déjà passée";
     } else {
-        // si l'id n'existe pas déjà : insérer une ligne avec toutes les données à initialiser
-        // on met l'id_profil en début de tableau pour raison de syntaxe SQL
-        $nouv_dispo=array('id_profil'=>$_SESSION['id_profil'])+$nouv_dispo;
-        $champs_init="";
-        $valeurs_init="";
-        foreach ($nouv_dispo as $date_dispo => $place_dispo) {
-            $champs_init=$champs_init.",".$date_dispo;
-            $valeurs_init=$valeurs_init.",:".$date_dispo;
+        $nb_jours=(strtotime($date_fin)-strtotime($date_debut))/(60*60*24);
+        if ($nb_jours<1) {
+            $_SESSION['erreur_dispo']="la date de fin choisie est antérieure à la date de début";  
+        } else {
+            $nb_places=htmlspecialchars($_POST['nb_places']);
+            if (!is_numeric($nb_places)) {
+                $nb_places=0;
+            }
+            $req_insert_dispo=$bdd->prepare('INSERT INTO jonction_profil_dispo (id_profil, date_debut, nb_jours, nb_places) VALUES (?, ?, ?, ?)');
+            $req_insert_dispo->execute(array($_SESSION['id_profil'], $date_debut, $nb_jours, $nb_places));
         }
-        $champs_init=substr($champs_init, 1);
-        $valeurs_init=substr($valeurs_init, 1);
-
-        $req_insert_dispo=$bdd->prepare('INSERT INTO disponibilite ('.$champs_init.') VALUES ('.$valeurs_init.')');
-        $req_insert_dispo->execute($nouv_dispo);
     }
 } 
+
+// si on arrive via le bouton "X"
+if (isset($_POST['suppr_dispo'])){
+    $id_jonction_pd=htmlspecialchars($_POST['suppr_dispo']);
+    $req_suppr_dispo=$bdd->prepare('DELETE FROM jonction_profil_dispo WHERE id_jonction_pd = ?');
+    $req_suppr_dispo->execute(array($id_jonction_pd));
+}
+
 header('Location: /www/hebergement');
 exit();
+
 ?>

@@ -17,6 +17,7 @@ if (isset($_POST['modif_profil'])){
     if (!preg_match("#^[a-z0-9._-]+@[a-z0-9._-]{2,}\.[a-z]{2,4}$#", $infos_modif['email'])){
         $_SESSION['erreur_modif']="email invalide";
     } else {
+        $email=strtolower($email);
         //vérification que l'email ne soit pas déjà enregistré dans une autre entrée de la bdd
         $req_verif=$bdd->prepare('SELECT COUNT(*) FROM profil WHERE email=? AND id_profil!=?');
         $req_verif->execute(array($infos_modif['email'],$_SESSION['id_profil']));

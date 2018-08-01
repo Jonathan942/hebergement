@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Jul 22, 2018 at 10:17 
+-- Generation Time: Aug 01, 2018 at 01:38 
 -- Server version: 10.1.13-MariaDB
 -- PHP Version: 5.6.21
 
@@ -35,51 +35,32 @@ DELIMITER ;
 -- --------------------------------------------------------
 
 --
--- Table structure for table `disponibilite`
---
-
-CREATE TABLE `disponibilite` (
-  `id_dispo` smallint(4) UNSIGNED NOT NULL,
-  `id_profil` smallint(4) UNSIGNED NOT NULL,
-  `date_choix` date NOT NULL,
-  `date_0` enum('0','1','2','3','4','5','6','7 et +') NOT NULL,
-  `date_1` enum('0','1','2','3','4','5','6','7 et +') NOT NULL,
-  `date_2` enum('0','1','2','3','4','5','6','7 et +') NOT NULL,
-  `date_3` enum('0','1','2','3','4','5','6','7 et +') NOT NULL,
-  `date_4` enum('0','1','2','3','4','5','6','7 et +') NOT NULL,
-  `date_5` enum('0','1','2','3','4','5','6','7 et +') NOT NULL,
-  `date_6` enum('0','1','2','3','4','5','6','7 et +') NOT NULL,
-  `date_7` enum('0','1','2','3','4','5','6','7 et +') NOT NULL,
-  `date_8` enum('0','1','2','3','4','5','6','7 et +') NOT NULL,
-  `date_9` enum('0','1','2','3','4','5','6','7 et +') NOT NULL,
-  `date_10` enum('0','1','2','3','4','5','6','7 et +') NOT NULL,
-  `date_11` enum('0','1','2','3','4','5','6','7 et +') NOT NULL,
-  `date_12` enum('0','1','2','3','4','5','6','7 et +') NOT NULL,
-  `date_13` enum('0','1','2','3','4','5','6','7 et +') NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `disponibilite`
---
-
-INSERT INTO `disponibilite` (`id_dispo`, `id_profil`, `date_choix`, `date_0`, `date_1`, `date_2`, `date_3`, `date_4`, `date_5`, `date_6`, `date_7`, `date_8`, `date_9`, `date_10`, `date_11`, `date_12`, `date_13`) VALUES
-(1, 1, '2018-07-20', '0', '0', '0', '2', '1', '1', '3', '3', '3', '3', '', '', '', ''),
-(2, 2, '2018-07-20', '2', '2', '2', '2', '1', '1', '1', '1', '1', '1', '2', '2', '2', '2'),
-(3, 4, '2018-06-12', '1', '2', '1', '2', '1', '', '', '', '', '', '', '', '', ''),
-(4, 5, '2018-06-06', '1', '', '', '', '', '', '', '', '', '', '', '', '', '');
-
--- --------------------------------------------------------
-
---
 -- Table structure for table `jonction_profil_dispo`
 --
 
 CREATE TABLE `jonction_profil_dispo` (
   `id_jonction_pd` int(11) NOT NULL,
   `id_profil` int(11) NOT NULL,
-  `intervalle_date` tinyint(2) UNSIGNED NOT NULL,
-  `place` tinyint(1) UNSIGNED NOT NULL
+  `date_debut` date NOT NULL,
+  `nb_jours` tinyint(2) UNSIGNED NOT NULL,
+  `nb_places` tinyint(1) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `jonction_profil_dispo`
+--
+
+INSERT INTO `jonction_profil_dispo` (`id_jonction_pd`, `id_profil`, `date_debut`, `nb_jours`, `nb_places`) VALUES
+(7, 1, '2018-08-04', 1, 1),
+(8, 2, '2018-07-30', 6, 2),
+(9, 3, '2018-08-01', 7, 1),
+(10, 2, '2018-08-02', 3, 2),
+(11, 6, '2018-08-01', 7, 1),
+(12, 5, '2018-08-02', 3, 2),
+(13, 5, '2018-07-31', 2, 1),
+(14, 4, '2018-07-29', 5, 2),
+(16, 45, '2018-07-31', 4, 2),
+(17, 1, '2018-08-30', 2, 2);
 
 -- --------------------------------------------------------
 
@@ -99,9 +80,14 @@ CREATE TABLE `jonction_profil_organisation` (
 
 INSERT INTO `jonction_profil_organisation` (`id_jonction_po`, `id_profil`, `id_orga`) VALUES
 (51, 34, 2),
-(68, 1, 5),
-(69, 1, 1),
-(70, 2, 1);
+(72, 45, 34),
+(73, 1, 1),
+(74, 45, 1),
+(75, 4, 1),
+(76, 1, 5),
+(77, 45, 5),
+(78, 2, 4),
+(79, 5, 5);
 
 -- --------------------------------------------------------
 
@@ -155,7 +141,8 @@ INSERT INTO `organisation` (`id_orga`, `nom_orga`) VALUES
 (4, 'Paroisse 10e'),
 (5, 'Soviet'),
 (32, 'Paroisse 10'),
-(33, 'Jordi');
+(33, 'Jordi'),
+(34, 'JIVEP');
 
 -- --------------------------------------------------------
 
@@ -189,10 +176,10 @@ INSERT INTO `profil` (`id_profil`, `nom_prenom`, `telephone`, `email`, `mdp`) VA
 --
 
 --
--- Indexes for table `disponibilite`
+-- Indexes for table `jonction_profil_dispo`
 --
-ALTER TABLE `disponibilite`
-  ADD PRIMARY KEY (`id_dispo`);
+ALTER TABLE `jonction_profil_dispo`
+  ADD PRIMARY KEY (`id_jonction_pd`);
 
 --
 -- Indexes for table `jonction_profil_organisation`
@@ -224,15 +211,15 @@ ALTER TABLE `profil`
 --
 
 --
--- AUTO_INCREMENT for table `disponibilite`
+-- AUTO_INCREMENT for table `jonction_profil_dispo`
 --
-ALTER TABLE `disponibilite`
-  MODIFY `id_dispo` smallint(4) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+ALTER TABLE `jonction_profil_dispo`
+  MODIFY `id_jonction_pd` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
 --
 -- AUTO_INCREMENT for table `jonction_profil_organisation`
 --
 ALTER TABLE `jonction_profil_organisation`
-  MODIFY `id_jonction_po` mediumint(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=71;
+  MODIFY `id_jonction_po` mediumint(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=80;
 --
 -- AUTO_INCREMENT for table `jonction_profil_reseau`
 --
@@ -242,7 +229,7 @@ ALTER TABLE `jonction_profil_reseau`
 -- AUTO_INCREMENT for table `organisation`
 --
 ALTER TABLE `organisation`
-  MODIFY `id_orga` smallint(4) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=34;
+  MODIFY `id_orga` smallint(4) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=35;
 --
 -- AUTO_INCREMENT for table `profil`
 --

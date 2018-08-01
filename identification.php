@@ -3,6 +3,7 @@
 // if nécessaire? (les champs email et mdp sont en "required")
 if (isset($_POST['email']) AND (isset($_POST['mdp']))){
     $email=htmlspecialchars($_POST['email']);
+    $email=strtolower($email);
     $mdp=htmlspecialchars($_POST['mdp']);
     if (!preg_match("#^[a-z0-9._-]+@[a-z0-9._-]{2,}\.[a-z]{2,4}$#",$email)) {
         $_SESSION['erreur_identif']="l'adresse email est invalide";
