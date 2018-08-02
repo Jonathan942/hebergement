@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Aug 01, 2018 at 01:38 
+-- Generation Time: Aug 02, 2018 at 06:06 
 -- Server version: 10.1.13-MariaDB
 -- PHP Version: 5.6.21
 
@@ -42,7 +42,7 @@ CREATE TABLE `jonction_profil_dispo` (
   `id_jonction_pd` int(11) NOT NULL,
   `id_profil` int(11) NOT NULL,
   `date_debut` date NOT NULL,
-  `nb_jours` tinyint(2) UNSIGNED NOT NULL,
+  `nb_nuits` tinyint(2) UNSIGNED NOT NULL,
   `nb_places` tinyint(1) UNSIGNED NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
@@ -50,17 +50,15 @@ CREATE TABLE `jonction_profil_dispo` (
 -- Dumping data for table `jonction_profil_dispo`
 --
 
-INSERT INTO `jonction_profil_dispo` (`id_jonction_pd`, `id_profil`, `date_debut`, `nb_jours`, `nb_places`) VALUES
+INSERT INTO `jonction_profil_dispo` (`id_jonction_pd`, `id_profil`, `date_debut`, `nb_nuits`, `nb_places`) VALUES
 (7, 1, '2018-08-04', 1, 1),
-(8, 2, '2018-07-30', 6, 2),
 (9, 3, '2018-08-01', 7, 1),
-(10, 2, '2018-08-02', 3, 2),
 (11, 6, '2018-08-01', 7, 1),
-(12, 5, '2018-08-02', 3, 2),
-(13, 5, '2018-07-31', 2, 1),
-(14, 4, '2018-07-29', 5, 2),
-(16, 45, '2018-07-31', 4, 2),
-(17, 1, '2018-08-30', 2, 2);
+(12, 5, '2018-08-02', 5, 2),
+(14, 4, '2018-07-29', 7, 2),
+(17, 1, '2018-08-30', 2, 2),
+(21, 2, '2018-08-01', 3, 2),
+(22, 2, '2018-07-31', 5, 3);
 
 -- --------------------------------------------------------
 
@@ -87,7 +85,8 @@ INSERT INTO `jonction_profil_organisation` (`id_jonction_po`, `id_profil`, `id_o
 (76, 1, 5),
 (77, 45, 5),
 (78, 2, 4),
-(79, 5, 5);
+(79, 5, 5),
+(80, 4, 5);
 
 -- --------------------------------------------------------
 
@@ -214,12 +213,12 @@ ALTER TABLE `profil`
 -- AUTO_INCREMENT for table `jonction_profil_dispo`
 --
 ALTER TABLE `jonction_profil_dispo`
-  MODIFY `id_jonction_pd` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=18;
+  MODIFY `id_jonction_pd` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
 --
 -- AUTO_INCREMENT for table `jonction_profil_organisation`
 --
 ALTER TABLE `jonction_profil_organisation`
-  MODIFY `id_jonction_po` mediumint(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=80;
+  MODIFY `id_jonction_po` mediumint(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=81;
 --
 -- AUTO_INCREMENT for table `jonction_profil_reseau`
 --
