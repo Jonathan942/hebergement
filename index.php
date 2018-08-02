@@ -157,15 +157,13 @@
             </fieldset>
         </form> 
         <form action="modification_dispo.php" method="post" class="collapse" id="mes_dispos">
-                <!-- le tableau $dispos regroupe toutes mes disponibilites -->
-                <?php foreach ($dispos as $cle => $tableau) { ?>
-                    <div class="input-group">
-                        <input type="text" class="form-control" value="<?php echo 'Du '.$tableau['date_debut'].' au '.$tableau['date_fin'].' ('.$tableau['nb_jours'].' jours) : '.$tableau['nb_places'].' places';?>" disabled>
-                        <span class="input-group-btn">
-                            <button type="submit" name="suppr_dispo" class="btn" value="<?php echo $cle;?>"">&times;</button>
-                        </span>
-                    </div>
-                <?php } ?>
+        <!-- le tableau $dispos regroupe toutes mes disponibilites -->
+        <?php foreach ($dispos as $cle => $tableau) { ?>
+            <div class="btn-group">
+                <button type="button" class="btn"><?php echo 'Du '.$tableau['date_debut'].' au '.$tableau['date_fin'].' ('.$tableau['nb_nuits'].' nuits) : '.$tableau['nb_places'].' places';?></button>
+                <button type="submit" name="suppr_dispo" class="btn" value="<?php echo $cle;?>"">&times;</button>
+            </div>
+        <?php } ?>
         </form>        
 
         <h2>Les disponibilités dans mon réseau :</h2>
@@ -182,19 +180,31 @@
                 </div>
             </div>
         </form>
-        <form method="get" action="">
-            <!-- le tableau $dispos_reseau regroupe toutes les disponibilites de mon réseau -->
-            <?php foreach ($dispos_reseau as $cle => $tableau) { ?>
-                <div class="input-group">
-                    <input type="text" class="form-control" value="<?php echo 'id = '.$tableau['id_profil'].' => Du '.$tableau['date_debut'].' au '.$tableau['date_fin'].' ('.$tableau['nb_jours'].' jours) : '.$tableau['nb_places'].' places';?>" disabled>
-                    <span class="input-group-btn">
-                        <button type="submit" name="suppr_dispo" class="btn" value="<?php echo $cle;?>"">&times;</button>
-                    </span>
-                </div>
-            <?php } ?>
-        </form>
 
+        <form method="post" action="">
+        <!-- le tableau $dispos_reseau regroupe toutes les disponibilites de mon réseau -->
+        <?php foreach ($dispos_reseau as $cle => $tableau) { ?>
+            <div class="btn-group">
+                <div class="btn-group">
+                    <button type="button" class="btn dropdown-toggle" data-toggle="dropdown"><?php echo 'Du '.$tableau['date_debut'].' au '.$tableau['date_fin'].' ('.$tableau['nb_nuits'].' nuits) : '.$tableau['nb_places'].' places';?><span class="caret"></span></button>
+                    <ul class="dropdown-menu" role="menu">
+                        <li><p><?php echo $tableau['nom_prenom'].' ('.$tableau['nom_orga'].')';?></p></li>
+                        <li><p><?php echo $tableau['telephone'].' - '.$tableau['email'];?></p></li>
+                    </ul>
+                </div>
         
+             
+                <div class="btn-group">
+                    <button type="button" class="btn btn-default dropdown-toggle" data-toggle="dropdown">&times;</button><span class="caret"></span></button>
+                    <ul class="dropdown-menu  dropdown-menu-right" role="menu">
+                        <li>
+                            <button type="submit" name="suppr_dispo" class="btn btn-warning" value="<?php echo $cle;?>"">La place n'est plus disponible</button>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        <?php } ?>
+        </form>
 
         <h2>Pour inscrire une nouvelle personne : </h2>
         <button class="btn" data-toggle="collapse" data-target="#ajout">Parrainer une nouvelle personne</button>

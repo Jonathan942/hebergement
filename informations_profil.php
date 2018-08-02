@@ -16,8 +16,9 @@ while ($reponse_orgas_appartenance=$recup_orgas_appartenance->fetch()){
 
 // récupération de toutes les organisations et mise dans un tableau qui servira pour la liste
 unset($_SESSION['all_orgas']);
-$recup_all_orgas=$bdd->query('SELECT nom_orga FROM organisation'); 
+$_SESSION['all_orgas']=array();
+$recup_all_orgas=$bdd->query('SELECT * FROM organisation'); 
 while ($reponse_all_orgas = $recup_all_orgas->fetch()) {
-    $_SESSION['all_orgas'][]= $reponse_all_orgas['nom_orga'];
+    $_SESSION['all_orgas'][$reponse_all_orgas['id_orga']]= $reponse_all_orgas['nom_orga'];
 }
 ?>
