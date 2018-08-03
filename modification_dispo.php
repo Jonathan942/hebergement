@@ -17,16 +17,16 @@ if (isset($_POST['ajout_dispo'])){
     if ((strtotime($date_debut)-strtotime($ajd))<0){
         $_SESSION['erreur_dispo']="la date choisie est déjà passée";
     } else {
-        $nb_jours=(strtotime($date_fin)-strtotime($date_debut))/(60*60*24);
-        if ($nb_jours<1) {
+        $nb_nuits=(strtotime($date_fin)-strtotime($date_debut))/(60*60*24);
+        if ($nb_nuits<1) {
             $_SESSION['erreur_dispo']="la date de fin choisie est antérieure à la date de début";  
         } else {
             $nb_places=htmlspecialchars($_POST['nb_places']);
             if (!is_numeric($nb_places)) {
                 $nb_places=0;
             }
-            $req_insert_dispo=$bdd->prepare('INSERT INTO jonction_profil_dispo (id_profil, date_debut, nb_jours, nb_places) VALUES (?, ?, ?, ?)');
-            $req_insert_dispo->execute(array($_SESSION['id_profil'], $date_debut, $nb_jours, $nb_places));
+            $req_insert_dispo=$bdd->prepare('INSERT INTO jonction_profil_dispo (id_profil, date_debut, nb_nuits, nb_places) VALUES (?, ?, ?, ?)');
+            $req_insert_dispo->execute(array($_SESSION['id_profil'], $date_debut, $nb_nuits, $nb_places));
         }
     }
 } 
