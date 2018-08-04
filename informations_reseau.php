@@ -4,7 +4,6 @@ $req_nettoyage=$bdd->query('DELETE FROM jonction_profil_dispo WHERE DATEDIFF(CUR
 
 /* Dans un 1er temps, la logique de réseau existe mais n'est pas exclusive : l'affichage des disponibilités concerne toutes les personnes inscrites sur le site, avec un tri dans l'affichage pour faire d'abord apparaître les personnes qui appartiennent aux mêmes organisations + l'affichage par zone géographique avec une carte
 Dans un 2e temps, à partir d'un nombre seuil (à définir, mais important) de personnes inscrites, la logique de réseau deviendra exclusive : l'affichage des disponibilités concerne seulement les personne des mêmes groupes d'appartenance (+ tounuits affichage par zone géographique), voire plutôt des personnes appartenant au même réseau que moi (réseau modulable en fonction de chaque personne, à l'aide d'une table jonction_profil_reseau déjà créée)*/
-$dispos_reseau=array();
 
 // si on arrive via le bouton "X"
 if (isset($_POST['suppr_dispo'])){
@@ -62,6 +61,7 @@ if (isset($_GET['date_choisie']) AND !empty($_GET['date_choisie'])) {
 
     //on fusionne les 2 tableaux, avec en premier celui des résultats de la recherche par orga
     $reponse_dispos_reseau=array_merge($reponse_dispos_orga,$reponse_dispos_autre);
+    $dispos_reseau=array();
     foreach ($reponse_dispos_reseau as $entree) {
         // pour chaque résultat (chaque dispo), on met dans un tableau: id_profil, date_debut, date_fin, nb_nuits, nb_places
         $date_debut=date('d/m', strtotime($entree['date_debut']));

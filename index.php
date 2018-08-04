@@ -73,7 +73,7 @@
                     <label for="telephone" class="">Votre numéro français de téléphone :</label>
                     <input type="tel" name="telephone" id="telephone" class="form-control" placeholder="" value="<?php echo $infos['telephone']; ?>" maxlength="45" required=""/>
                 </div>
-                <button type="submit" name="modif_profil" class="btn">Mettre à jour mon profil</button>
+                <button type="submit" name="modif_profil" value="<?php echo $_SESSION['id_profil'];?>" class="btn">Mettre à jour mon profil</button>
             </fieldset>
         </form>
         <button class="btn" data-toggle="collapse" data-target="#modif_orga">Modifier mes organisations</button>
@@ -183,10 +183,12 @@
 
         <form method="post" action="">
         <!-- le tableau $dispos_reseau regroupe toutes les disponibilites de mon réseau -->
-        <?php if (empty($dispos_reseau)) {
-            echo "Pas de résultat";
-        } else {
-            foreach ($dispos_reseau as $cle => $tableau) { ?>
+        <?php 
+        if (isset($dispos_reseau)) {
+            if (empty($dispos_reseau)) {
+                echo "Pas de résultat";
+            } else {
+                foreach ($dispos_reseau as $cle => $tableau) { ?>
                 <div class="btn-group">
                     <div class="btn-group">
                         <button type="button" class="btn dropdown-toggle" data-toggle="dropdown"><?php echo 'Du '.$tableau['date_debut'].' au '.$tableau['date_fin'].' ('.$tableau['nb_nuits'].' nuits) : '.$tableau['nb_places'].' places';?><span class="caret"></span></button>
@@ -206,13 +208,15 @@
                         </ul>
                     </div>
                 </div>
-            <?php } 
-         }?>
+                <?php } 
+            }
+        }
+        ?>
         </form>
 
         <h2>Pour inscrire une nouvelle personne : </h2>
         <button class="btn" data-toggle="collapse" data-target="#ajout">Parrainer une nouvelle personne</button>
-        <form method="post" action="ajout_profil.php" class="collapse" id="ajout">
+        <form method="post" action="modification_profil.php" class="collapse" id="ajout">
             <fieldset>
                 <div class="form-group">
                     <label for="nouv_nom" class="">Son nom ou pseudo :</label>
@@ -238,7 +242,7 @@
                     echo $_SESSION['erreur_ajout']; 
                     unset($_SESSION['erreur_ajout']);
                 } ?>
-                <button type="submit" name="ajout_infos" class="btn">Inscrire cette personne</button>
+                <button type="submit" name="ajout_profil" value="ajout" class="btn">Inscrire cette personne</button>
             </fieldset>           
         </form>
       

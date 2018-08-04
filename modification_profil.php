@@ -4,41 +4,69 @@ include_once('connexion_sql.php');
 /* s'il s'agit de modifier les infos de contact */
 
 // si on arrive via le bouton "mettre à jour mon profil" 
-if (isset($_POST['modif_profil'])){    
-    $infos_modif=array('nom'=>'','telephone'=>'','email'=>'');
-    foreach ($infos_modif as $cle=> &$element){
-        if (!empty($_POST[''.$cle])){
-            $element=htmlspecialchars($_POST[''.$cle]);
+if (isset($_POST['modif_profil']) OR isset($_POST['ajout_profil'])){ 
+    if(isset($_POST['modif_profil'])){
+        $titre_erreur='erreur_modif';
+    } else {
+        $titre_erreur='erreur_ajout';
+    }
+    $infos=array();
+    foreach ($_POST as $cle=> $element){
+        if (!empty($element)){
+            $infos[$cle]=htmlspecialchars($element);
         } else {
-            $_SESSION['erreur_modif']="il manque des informations";
+            $_SESSION[$titre_erreur]="il manque des informations";
         }
     }
-    $infos_modif['id_profil']=$_SESSION['id_profil'];
     
     // vérification format email
-    if (!preg_match("#^[a-z0-9._-]+@[a-z0-9._-]{2,}\.[a-z]{2,4}$#", $infos_modif['email'])){
-        $_SESSION['erreur_modif']="email invalide";
+    if (!preg_match("#^[a-z0-9._-]+@[a-z0-9._-]{2,}\.[a-z]{2,4}$#", $infos['email'])){
+        $_SESSION[$titre_erreur]="email invalide";
     } else {
-        $infos_modif['email']=strtolower($infos_modif['email']);
+        $infos['email']=strtolower($infos['email']);
         //vérification que l'email ne soit pas déjà enregistré dans une autre entrée de la bdd
-        $req_verif=$bdd->prepare('SELECT COUNT(*) as nb_email FROM profil WHERE email=? AND id_profil!=?');
-        $req_verif->execute(array($infos_modif['email'],$_SESSION['id_profil']));
+        if (isset($_POST['modif_profil'])) {
+            $req_verif=$bdd->prepare('SELECT COUNT(*) as nb_email FROM profil WHERE email=? AND id_profil!=?');
+            $req_verif->execute(array($infos['email'],$_SESSION['id_profil']));
+        } else {
+            $req_verif=$bdd->prepare('SELECT COUNT(*) as nb_email FROM profil WHERE email=?');
+            $req_verif->execute(array($infos['email']));
+        }
         $verif=$req_verif->fetch();
         if ($verif['nb_email']!=0) {
-            $_SESSION['erreur_modif']="cet email correspond à une personne déjà inscrite";
+            $_SESSION[$titre_erreur]="cet email correspond à une personne déjà inscrite";
         }
     }
     // vérification format téléphone
     $caractere_a_suppr=array("-", ".", " ");
-    $infos_modif['telephone']=str_replace($caractere_a_suppr, "", $infos_modif['telephone']);
-    if (!preg_match("#^0[1-8][0-9]{8}$#", $infos_modif['telephone'])) {
-        $_SESSION['erreur_modif']="téléphone invalide";
+    $infos['telephone']=str_replace($caractere_a_suppr, "", $infos['telephone']);
+    if (!preg_match("#^0[1-8][0-9]{8}$#", $infos['telephone'])) {
+        $_SESSION[$titre_erreur]="téléphone invalide";
     }
-
-    //modification des infos dans la bdd si pas d'erreur
-    if (!isset($_SESSION['erreur_modif'])) {
-        $req_modif=$bdd->prepare('UPDATE profil SET nom_prenom=:nom, telephone=:telephone, email=:email WHERE id_profil=:id_profil');
-        $req_modif->execute($infos_modif);
+    if (isset($_POST['ajout_profil'])) {
+        // vérification mot de passe (faire une fonction car ça revient plus bas)
+        if (empty($infos['mdp2'])){
+            $_SESSION[$titre_erreur]="Veuillez confirmer le mot de passe";
+        } else {
+            if($infos['mdp']!=$infos['mdp2']){
+            $_SESSION[$titre_erreur]="Les 2 mots de passe ne sont pas identiques";
+            } else {
+                //hashage du mdp
+                $infos['mdp'] = password_hash($infos['mdp'], PASSWORD_DEFAULT);
+                unset($infos['mdp2']);
+            }
+        }
+    }
+    //modification ou ajout des infos dans la bdd si pas d'erreur
+    if (!isset($_SESSION[$titre_erreur])) {
+        if (isset($_POST['modif_profil'])) {
+            $req_modif=$bdd->prepare('UPDATE profil SET nom_prenom=:nom, telephone=:telephone, email=:email WHERE id_profil=:modif_profil');
+            $req_modif->execute($infos);
+        } else {
+            unset($infos['ajout_profil']);
+            $req_insert=$bdd->prepare('INSERT INTO profil (nom_prenom, telephone, email, mdp) VALUES (:nom,:telephone,:email,:mdp)');
+            $req_insert->execute($infos);
+        }
     }
 }
 
