@@ -1,8 +1,10 @@
 <?php 
+
+// récupération des dates déjà signalées comme disponibles pour héberger
 //si la date de fin (date_debut + nb_nuits) est passée, la ligne est déjà supprimée via une requete de nettoyage (cf informations_reseau.php)
-$req_dispos=$bdd->prepare('SELECT *, DATEDIFF(CURRENT_DATE(),date_debut) as intervalle FROM jonction_profil_dispo WHERE id_profil=? ORDER BY date_debut');
+$req_dispos=$bdd->prepare('SELECT *, DATEDIFF(CURRENT_DATE(),date_debut) as intervalle FROM dispos_hebergement WHERE id_profil=? ORDER BY date_debut');
 $req_dispos->execute(array($_SESSION['id_profil']));
-$dispos=array();
+$dispos_hebergement=array();
 while($reponse_dispos=$req_dispos->fetch()){
 	//on met dans un tableau: date_debut, date_fin, nb_nuits, nb_places
 	$date_fin=date('d/m', strtotime($reponse_dispos['date_debut'].'+'.$reponse_dispos['nb_nuits'].' DAY'));
@@ -14,7 +16,13 @@ while($reponse_dispos=$req_dispos->fetch()){
 		$date_debut=date('d/m', strtotime($reponse_dispos['date_debut']));
 		$nb_nuits=$reponse_dispos['nb_nuits'];
 	}
-	$dispos[$reponse_dispos['id_jonction_pd']]=array('date_debut'=>$date_debut,'date_fin'=>$date_fin,'nb_nuits'=>$nb_nuits,'nb_places'=>$reponse_dispos['nb_places']);
+	$dispos_hebergement[$reponse_dispos['id_dispos']]=array('date_debut'=>$date_debut,'date_fin'=>$date_fin,'nb_nuits'=>$nb_nuits,'nb_places'=>$reponse_dispos['nb_places']);
 }
+
+// récupération des infos concernant la description du couchage et la préférence pour l'hébergement
+$infos_hebergement=array();
+$req_infos_hbgt=$bdd->prepare('SELECT description, preference FROM infos_hebergement WHERE id_profil=?');
+$req_infos_hbgt->execute(array($_SESSION['id_profil']));
+$infos_hebergement=$req_infos_hbgt->fetch();
 
 ?>

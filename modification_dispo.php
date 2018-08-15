@@ -25,7 +25,7 @@ if (isset($_POST['ajout_dispo'])){
             if (!is_numeric($nb_places)) {
                 $nb_places=0;
             }
-            $req_insert_dispo=$bdd->prepare('INSERT INTO jonction_profil_dispo (id_profil, date_debut, nb_nuits, nb_places) VALUES (?, ?, ?, ?)');
+            $req_insert_dispo=$bdd->prepare('INSERT INTO dispos_hebergement (id_profil, date_debut, nb_nuits, nb_places) VALUES (?, ?, ?, ?)');
             $req_insert_dispo->execute(array($_SESSION['id_profil'], $date_debut, $nb_nuits, $nb_places));
         }
     }
@@ -33,9 +33,9 @@ if (isset($_POST['ajout_dispo'])){
 
 // si on arrive via le bouton "X"
 if (isset($_POST['suppr_dispo'])){
-    $id_jonction_pd=htmlspecialchars($_POST['suppr_dispo']);
-    $req_suppr_dispo=$bdd->prepare('DELETE FROM jonction_profil_dispo WHERE id_jonction_pd = ?');
-    $req_suppr_dispo->execute(array($id_jonction_pd));
+    $id_dispos=htmlspecialchars($_POST['suppr_dispo']);
+    $req_suppr_dispo=$bdd->prepare('DELETE FROM dispos_hebergement WHERE id_dispos = ?');
+    $req_suppr_dispo->execute(array($id_dispos));
 }
 
 header('Location: /www/hebergement');

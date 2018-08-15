@@ -131,6 +131,16 @@
         <button class="btn btn-primary" data-toggle="collapse" data-target="#mes_dispos">Disponibilités pour héberger</button>
         <form action="modification_dispo.php" method="post" class="collapse" id="mes_dispos">
             <fieldset>
+                <div class="form-group">
+                    <label for="description">Description (facultatif) :</label>
+                    <input type="text" name="description" id="description" class="form-control" placeholder="description des modalités de l'hébergement" value="<?php if (isset($infos_hebergement['description'])) echo $infos_hebergement['description']; ?>"/>
+                </div>
+                <div class="form-group">
+                    <label for="preference">Préférence (facultatif) :</label>
+                    <input type="text" name="preference" id="preference" class="form-control" placeholder="veuillez préciser s'il s'agit d'une préférence exclusive" value="<?php if (isset($infos_hebergement['preference'])) echo $infos_hebergement['preference']; ?>"/>
+                </div>
+            </fieldset>
+            <fieldset>
                 <div class="form-inline">
                     <div class="form-group">
                         <label for="date_debut">Du</label>
@@ -158,7 +168,7 @@
         </form> 
         <form action="modification_dispo.php" method="post" class="collapse" id="mes_dispos">
         <!-- le tableau $dispos regroupe toutes mes disponibilites -->
-        <?php foreach ($dispos as $cle => $tableau) { ?>
+        <?php foreach ($dispos_hebergement as $cle => $tableau) { ?>
             <div class="btn-group">
                 <button type="button" class="btn"><?php echo 'Du '.$tableau['date_debut'].' au '.$tableau['date_fin'].' ('.$tableau['nb_nuits'].' nuits) : '.$tableau['nb_places'].' places';?></button>
                 <button type="submit" name="suppr_dispo" class="btn" value="<?php echo $cle;?>"">&times;</button>
