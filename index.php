@@ -127,53 +127,66 @@
             </div>
         </form>
         <button class="btn btn-primary" data-toggle="collapse" data-target="#mes_dispos">Disponibilités pour héberger</button>
-        <form action="modification_dispo.php" method="post" class="collapse" id="mes_dispos">
-            <fieldset>
-                <div class="form-group">
-                    <label for="description">Description (facultatif) :</label>
-                    <input type="text" name="description" id="description" class="form-control" placeholder="description des modalités de l'hébergement" value="<?php if (isset($infos_hebergement['description'])) echo $infos_hebergement['description']; ?>"/>
-                </div>
-                <div class="form-group">
-                    <label for="preference">Préférence (facultatif) :</label>
-                    <input type="text" name="preference" id="preference" class="form-control" placeholder="veuillez préciser s'il s'agit d'une préférence exclusive" value="<?php if (isset($infos_hebergement['preference'])) echo $infos_hebergement['preference']; ?>"/>
-                </div>
-            </fieldset>
-            <fieldset>
-                <div class="form-inline">
+        <div class="collapse" id="mes_dispos">
+            <form action="modification_dispo.php" method="post">
+                <fieldset>
                     <div class="form-group">
-                        <label for="date_debut">Du</label>
-                        <div class="input-group date" data-provide="datepicker">
-                            <input type="text" class="form-control" id="date_debut" name="date_debut" required/>
-                            <span class="input-group-addon">
-                                <span class="glyphicon glyphicon-calendar"></span>
-                            </span>
+                        <label for="description">Description (facultatif) :</label>
+                        <div class="input-group">
+                            <input type="text" name="description" id="description" class="form-control" placeholder="description des modalités de l'hébergement" value="<?php if (isset($infos_hebergement['description'])) echo $infos_hebergement['description']; ?>"/>
+                            <div class="input-group-btn">
+                                <button type="submit" class="btn" name="modif_description" value="<?php if (!empty($infos_hebergement)) echo true; else echo false; ?>">Modifier</button>
+                            </div>
                         </div>
-                        <label for="date_fin">au</label>
-                        <div class="input-group date" data-provide="datepicker">
-                        <!-- probleme : comment faire pour que la date se mette par défaut le lendemain de la date_debut-->
-                            <input type="text" class="form-control" id="date_fin" name="date_fin"/>
-                            <span class="input-group-addon">
-                                <span class="glyphicon glyphicon-calendar"></span>
-                            </span>
-                        </div>
-                        
-                        <label for="nb_places">Nombre de places</label>
-                        <input class="form-control" type="number" id="nb_places" name="nb_places" min="0" max="10" step="1" required>
-                        <button class="btn btn-default" type="submit" name="ajout_dispo">Ajouter</button>
                     </div>
+                    <div class="form-group">
+                        <label for="preference">Préférence (facultatif) :</label>
+                        <div class="input-group">
+                            <input type="text" name="preference" id="preference" class="form-control" placeholder="veuillez préciser s'il s'agit d'une préférence exclusive" value="<?php if (isset($infos_hebergement['preference'])) echo $infos_hebergement['preference']; ?>"/>
+                            <div class="input-group-btn">
+                                <button type="submit" class="btn" name="modif_preference" value="<?php if (!empty($infos_hebergement)) echo true; else echo false; ?>">Modifier</button>
+                            </div>
+                        </div>
+                    </div>
+                </fieldset>
+            </form>
+            <form action="modification_dispo.php" method="post">
+                <fieldset>
+                    <div class="form-inline">
+                        <div class="form-group">
+                            <label for="date_debut">Du</label>
+                            <div class="input-group date" data-provide="datepicker">
+                                <input type="text" class="form-control" id="date_debut" name="date_debut" required/>
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-calendar"></span>
+                                </span>
+                            </div>
+                            <label for="date_fin">au</label>
+                            <div class="input-group date" data-provide="datepicker">
+                            <!-- probleme : comment faire pour que la date se mette par défaut le lendemain de la date_debut-->
+                                <input type="text" class="form-control" id="date_fin" name="date_fin"/>
+                                <span class="input-group-addon">
+                                    <span class="glyphicon glyphicon-calendar"></span>
+                                </span>
+                            </div>
+                            
+                            <label for="nb_places">Nombre de places</label>
+                            <input class="form-control" type="number" id="nb_places" name="nb_places" min="0" max="10" step="1" required>
+                            <button class="btn btn-default" type="submit" name="ajout_dispo">Ajouter</button>
+                        </div>
+                    </div>
+                </fieldset>
+            </form> 
+            <form action="modification_dispo.php" method="post">
+            <!-- le tableau $dispos regroupe toutes mes disponibilites -->
+            <?php foreach ($dispos_hebergement as $cle => $tableau) { ?>
+                <div class="btn-group">
+                    <button type="button" class="btn"><?php echo 'Du '.$tableau['date_debut'].' au '.$tableau['date_fin'].' ('.$tableau['nb_nuits'].' nuits) : '.$tableau['nb_places'].' places';?></button>
+                    <button type="submit" name="suppr_dispo" class="btn" value="<?php echo $cle;?>"">&times;</button>
                 </div>
-            </fieldset>
-        </form> 
-        <form action="modification_dispo.php" method="post" class="collapse" id="mes_dispos">
-        <!-- le tableau $dispos regroupe toutes mes disponibilites -->
-        <?php foreach ($dispos_hebergement as $cle => $tableau) { ?>
-            <div class="btn-group">
-                <button type="button" class="btn"><?php echo 'Du '.$tableau['date_debut'].' au '.$tableau['date_fin'].' ('.$tableau['nb_nuits'].' nuits) : '.$tableau['nb_places'].' places';?></button>
-                <button type="submit" name="suppr_dispo" class="btn" value="<?php echo $cle;?>"">&times;</button>
-            </div>
-        <?php } ?>
-        </form>        
-
+            <?php } ?>
+            </form>        
+        </div>
         <h2>Les disponibilités dans mon réseau :</h2>
         <form method="get" action="">
             <div class="col-sm-3">
@@ -203,6 +216,7 @@
                         <ul class="dropdown-menu" role="menu">
                             <li><p><?php echo $tableau['nom_prenom'].' ('.$tableau['nom_orga'].')';?></p></li>
                             <li><p><?php echo $tableau['telephone'].' - '.$tableau['email'];?></p></li>
+                            <li><p><?php echo $tableau['description'].' - '.$tableau['preference'];?></p></li>
                         </ul>
                     </div>
             

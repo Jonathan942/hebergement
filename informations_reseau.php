@@ -39,7 +39,7 @@ if (isset($_GET['date_choisie']) AND !empty($_GET['date_choisie'])) {
     // pas besoin de refaire un join dans la table organisation (pour chercher le nom des orgas) car toutes les infos sont dans $_SESSION['all_orgas']
     // on sélectionne que les dispos qui commencent à la date choisie ou dont l'intervalle écoulé entre date_debut et date_choisie est inférieur à nb_nuits 
 
-    $recup_dispos_orga=$bdd->prepare('SELECT d.*, j.id_orga, p.nom_prenom, p.telephone, p.email FROM dispos_hebergement AS d JOIN jonction_profil_organisation AS j ON d.id_profil=j.id_profil JOIN  profil as p ON d.id_profil=p.id_profil WHERE ('.$critere_rech.' j.id_profil!=?) AND (DATEDIFF(?,d.date_debut) BETWEEN 0 AND d.nb_nuits-1)');
+    $recup_dispos_orga=$bdd->prepare('SELECT d.*, j.id_orga, p.nom_prenom, p.telephone, p.email, i.description, i.preference FROM dispos_hebergement AS d JOIN jonction_profil_organisation AS j ON d.id_profil=j.id_profil JOIN profil as p ON d.id_profil=p.id_profil JOIN infos_hebergement as i ON d.id_profil=i.id_profil WHERE ('.$critere_rech.' j.id_profil!=?) AND (DATEDIFF(?,d.date_debut) BETWEEN 0 AND d.nb_nuits-1)');
     $recup_dispos_orga->execute($tableau_rech);    
     $reponse_dispos_orga=$recup_dispos_orga->fetchAll();
     // 2e requete 
@@ -55,7 +55,7 @@ if (isset($_GET['date_choisie']) AND !empty($_GET['date_choisie'])) {
     $tableau_excl[]=$_SESSION['id_profil'];
     $tableau_excl[]=$date_choisie;
 
-    $recup_dispos_autre=$bdd->prepare('SELECT d.*, j.id_orga, p.nom_prenom, p.telephone, p.email FROM dispos_hebergement as d LEFT JOIN jonction_profil_organisation AS j ON d.id_profil=j.id_profil JOIN  profil as p ON d.id_profil=p.id_profil WHERE '.$critere_excl.' d.id_profil!=? AND (DATEDIFF(?,d.date_debut) BETWEEN 0 AND d.nb_nuits-1)');
+    $recup_dispos_autre=$bdd->prepare('SELECT d.*, j.id_orga, p.nom_prenom, p.telephone, p.email, i.description, i.preference FROM dispos_hebergement as d LEFT JOIN jonction_profil_organisation AS j ON d.id_profil=j.id_profil JOIN profil as p ON d.id_profil=p.id_profil JOIN infos_hebergement as i ON d.id_profil=i.id_profil WHERE '.$critere_excl.' d.id_profil!=? AND (DATEDIFF(?,d.date_debut) BETWEEN 0 AND d.nb_nuits-1)');
     $recup_dispos_autre->execute($tableau_excl);
     $reponse_dispos_autre=$recup_dispos_autre->fetchAll();
 
@@ -63,7 +63,7 @@ if (isset($_GET['date_choisie']) AND !empty($_GET['date_choisie'])) {
     $reponse_dispos_reseau=array_merge($reponse_dispos_orga,$reponse_dispos_autre);
     $dispos_reseau=array();
     foreach ($reponse_dispos_reseau as $entree) {
-        // pour chaque résultat (chaque dispo), on met dans un tableau: id_profil, date_debut, date_fin, nb_nuits, nb_places
+        // pour chaque résultat (chaque dispo), on met dans un tableau: id_profil, date_debut, date_fin, nb_nuits, nb_places, id_profil, nom_prenom, telephone, email, description et preference
         $date_debut=date('d/m', strtotime($entree['date_debut']));
         $date_fin=date('d/m', strtotime($entree['date_debut'].'+'.$entree['nb_nuits'].' DAY'));
         if (!empty($entree['id_orga'])) {
@@ -72,7 +72,7 @@ if (isset($_GET['date_choisie']) AND !empty($_GET['date_choisie'])) {
             $nom_orga="sans organisation";
         }
         if (!isset($dispos_reseau[$entree['id_dispos']])) {
-            $dispos_reseau[$entree['id_dispos']]=array('date_debut'=>$date_debut,'date_fin'=>$date_fin, 'nb_nuits'=>$entree['nb_nuits'], 'nb_places'=>$entree['nb_places'],'id_profil'=>$entree['id_profil'], 'nom_orga'=>$nom_orga, 'nom_prenom'=>$entree['nom_prenom'], 'telephone'=>$entree['telephone'], 'email'=>$entree['email']);
+            $dispos_reseau[$entree['id_dispos']]=array('date_debut'=>$date_debut,'date_fin'=>$date_fin, 'nb_nuits'=>$entree['nb_nuits'], 'nb_places'=>$entree['nb_places'],'id_profil'=>$entree['id_profil'], 'nom_orga'=>$nom_orga, 'nom_prenom'=>$entree['nom_prenom'], 'telephone'=>$entree['telephone'], 'email'=>$entree['email'], 'description'=>$entree['description'], 'preference'=>$entree['preference']);
         } else {
             $dispos_reseau[$entree['id_dispos']]['nom_orga']= $dispos_reseau[$entree['id_dispos']]['nom_orga']." et ".$nom_orga;
         }

@@ -3,7 +3,7 @@
 -- http://www.phpmyadmin.net
 --
 -- Host: localhost
--- Generation Time: Aug 02, 2018 at 06:06 
+-- Generation Time: Aug 15, 2018 at 02:57 
 -- Server version: 10.1.13-MariaDB
 -- PHP Version: 5.6.21
 
@@ -35,11 +35,11 @@ DELIMITER ;
 -- --------------------------------------------------------
 
 --
--- Table structure for table `jonction_profil_dispo`
+-- Table structure for table `dispos_hebergement`
 --
 
-CREATE TABLE `jonction_profil_dispo` (
-  `id_jonction_pd` int(11) NOT NULL,
+CREATE TABLE `dispos_hebergement` (
+  `id_dispos` int(11) NOT NULL,
   `id_profil` int(11) NOT NULL,
   `date_debut` date NOT NULL,
   `nb_nuits` tinyint(2) UNSIGNED NOT NULL,
@@ -47,18 +47,35 @@ CREATE TABLE `jonction_profil_dispo` (
 ) ENGINE=InnoDB DEFAULT CHARSET=latin1;
 
 --
--- Dumping data for table `jonction_profil_dispo`
+-- Dumping data for table `dispos_hebergement`
 --
 
-INSERT INTO `jonction_profil_dispo` (`id_jonction_pd`, `id_profil`, `date_debut`, `nb_nuits`, `nb_places`) VALUES
-(7, 1, '2018-08-04', 1, 1),
-(9, 3, '2018-08-01', 7, 1),
-(11, 6, '2018-08-01', 7, 1),
-(12, 5, '2018-08-02', 5, 2),
-(14, 4, '2018-07-29', 7, 2),
+INSERT INTO `dispos_hebergement` (`id_dispos`, `id_profil`, `date_debut`, `nb_nuits`, `nb_places`) VALUES
 (17, 1, '2018-08-30', 2, 2),
-(21, 2, '2018-08-01', 3, 2),
-(22, 2, '2018-07-31', 5, 3);
+(24, 45, '2018-08-17', 2, 2);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `infos_hebergement`
+--
+
+CREATE TABLE `infos_hebergement` (
+  `id_infos` smallint(4) UNSIGNED NOT NULL,
+  `id_profil` smallint(4) UNSIGNED NOT NULL,
+  `preference` varchar(40) NOT NULL,
+  `description` varchar(40) NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=latin1;
+
+--
+-- Dumping data for table `infos_hebergement`
+--
+
+INSERT INTO `infos_hebergement` (`id_infos`, `id_profil`, `preference`, `description`) VALUES
+(1, 2, 'mineurs seulement', 'un canapé 2 places'),
+(2, 4, 'femmes et familles', 'une chambre à part'),
+(3, 45, 'mineurs isolés', 'un canapé'),
+(4, 47, 'aucune', 'un matelas posé au sol');
 
 -- --------------------------------------------------------
 
@@ -82,41 +99,9 @@ INSERT INTO `jonction_profil_organisation` (`id_jonction_po`, `id_profil`, `id_o
 (73, 1, 1),
 (74, 45, 1),
 (75, 4, 1),
-(76, 1, 5),
-(77, 45, 5),
 (78, 2, 4),
-(79, 5, 5),
-(80, 4, 5);
-
--- --------------------------------------------------------
-
---
--- Table structure for table `jonction_profil_reseau`
---
-
-CREATE TABLE `jonction_profil_reseau` (
-  `id_jonction_pr` mediumint(6) UNSIGNED NOT NULL,
-  `id_profil_inf` smallint(4) UNSIGNED NOT NULL,
-  `id_profil_sup` smallint(4) UNSIGNED NOT NULL
-) ENGINE=InnoDB DEFAULT CHARSET=latin1;
-
---
--- Dumping data for table `jonction_profil_reseau`
---
-
-INSERT INTO `jonction_profil_reseau` (`id_jonction_pr`, `id_profil_inf`, `id_profil_sup`) VALUES
-(1, 1, 2),
-(2, 1, 3),
-(3, 1, 4),
-(4, 1, 5),
-(5, 2, 3),
-(6, 2, 4),
-(7, 2, 5),
-(8, 3, 4),
-(9, 3, 5),
-(10, 4, 5),
-(11, 3, 7),
-(12, 5, 7);
+(81, 1, 4),
+(82, 47, 1);
 
 -- --------------------------------------------------------
 
@@ -162,35 +147,38 @@ CREATE TABLE `profil` (
 --
 
 INSERT INTO `profil` (`id_profil`, `nom_prenom`, `telephone`, `email`, `mdp`) VALUES
-(1, 'Coralie N', 0600000001, 'coralien@email.fr', '$2y$10$vAo2EchWEB3.MsfZ2YMxhOjfvYrl6ZAtVI5gB56nxZWgQlK.youaC'),
+(1, 'J-P', 0606060607, 'jp@email.fr', '$2y$10$Jx5RdTu1TisIhhjgVZBDt.STxZbSm5ADykMFqbga6B.rc4s7gMqhG'),
 (2, 'Emilia J', 0600000002, 'emiliaj@email.com', '$2y$10$nVbpkn8NROgAgn9Ri2EmbuvQojadZmjSZ2e6sSz8kFEz.EtOZM.Na'),
 (3, 'Emmanuelle', 0600000003, 'emmanuelle@email.com', '$2y$10$lphTdmLeuodEJ4w9jT0luO4hVHlsV2TUOnIdnw5MlRkNqQcKfwY0e'),
 (4, 'Etienne', 0700000003, 'etienne@gmail.com', '$2y$10$snsyPNTWETbhSEBNFD6yLePjEjR4814cKNASoi.zfn9MXjaYDMzea'),
 (5, 'Fanny ', 0600000004, 'fanny@hotmail.fr', '$2y$10$TKfHOAFCha132/bzc8nlweqKT7.A3h6R5uaZMNMqexMx6LjsAAcsa'),
 (6, 'Francesca', 0600000005, 'francesca@yahoo.fr', '$2y$10$KjjTFiZTFihp7YiB/PpO3.s3LC3A973wnxLYZEJw/jq1tSfLXExRG'),
-(45, 'Jonathan', 0600000006, 'jonathan@hotmail.com', '$2y$10$vAvLtqcr0COeTW0MV0PHKe2za0RnQwhlTtvV0SZsDjOHZJd3F2pYa');
+(45, 'Jonathan', 0600000007, 'jonathan@hotmail.com', '$2y$10$vAvLtqcr0COeTW0MV0PHKe2za0RnQwhlTtvV0SZsDjOHZJd3F2pYa'),
+(46, 'Françoise', 0600000003, 'francoise@email.com', '$2y$10$2fp843a.U6b8HCpl1vdi3e2QTAA.5gKCrmM1y5IaotzAP0JRMCVkO'),
+(47, 'Coralie', 0600000003, 'coralien@email.fr', '$2y$10$8P1tmvkySfz7D.NM.2AWH..WmyYuKLetfhy5oPsy/c7b9xzYnDOIq'),
+(48, 'irene', 0101010101, 'irene@test.fr', '$2y$10$1NzVL5e8iDMHgIh5jb559OwLXocLnA48lQojrGkC45sfbupyOEUP6');
 
 --
 -- Indexes for dumped tables
 --
 
 --
--- Indexes for table `jonction_profil_dispo`
+-- Indexes for table `dispos_hebergement`
 --
-ALTER TABLE `jonction_profil_dispo`
-  ADD PRIMARY KEY (`id_jonction_pd`);
+ALTER TABLE `dispos_hebergement`
+  ADD PRIMARY KEY (`id_dispos`);
+
+--
+-- Indexes for table `infos_hebergement`
+--
+ALTER TABLE `infos_hebergement`
+  ADD PRIMARY KEY (`id_infos`);
 
 --
 -- Indexes for table `jonction_profil_organisation`
 --
 ALTER TABLE `jonction_profil_organisation`
   ADD PRIMARY KEY (`id_jonction_po`);
-
---
--- Indexes for table `jonction_profil_reseau`
---
-ALTER TABLE `jonction_profil_reseau`
-  ADD PRIMARY KEY (`id_jonction_pr`);
 
 --
 -- Indexes for table `organisation`
@@ -210,20 +198,20 @@ ALTER TABLE `profil`
 --
 
 --
--- AUTO_INCREMENT for table `jonction_profil_dispo`
+-- AUTO_INCREMENT for table `dispos_hebergement`
 --
-ALTER TABLE `jonction_profil_dispo`
-  MODIFY `id_jonction_pd` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=23;
+ALTER TABLE `dispos_hebergement`
+  MODIFY `id_dispos` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=25;
+--
+-- AUTO_INCREMENT for table `infos_hebergement`
+--
+ALTER TABLE `infos_hebergement`
+  MODIFY `id_infos` smallint(4) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
 --
 -- AUTO_INCREMENT for table `jonction_profil_organisation`
 --
 ALTER TABLE `jonction_profil_organisation`
-  MODIFY `id_jonction_po` mediumint(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=81;
---
--- AUTO_INCREMENT for table `jonction_profil_reseau`
---
-ALTER TABLE `jonction_profil_reseau`
-  MODIFY `id_jonction_pr` mediumint(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=13;
+  MODIFY `id_jonction_po` mediumint(6) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=83;
 --
 -- AUTO_INCREMENT for table `organisation`
 --
@@ -233,7 +221,7 @@ ALTER TABLE `organisation`
 -- AUTO_INCREMENT for table `profil`
 --
 ALTER TABLE `profil`
-  MODIFY `id_profil` smallint(4) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=46;
+  MODIFY `id_profil` smallint(4) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
 /*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
 /*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;

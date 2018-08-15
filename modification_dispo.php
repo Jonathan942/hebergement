@@ -1,5 +1,32 @@
 <?php session_start();
 include_once('connexion_sql.php');
+//si on modifie la description
+if (isset($_POST['modif_description'])) {
+    $description=htmlspecialchars($_POST['description']);
+    //mettre une variable pour savoir s'il s'agit de modifier (update) ou insérer (insert)
+    if ($_POST['modif_description']) {
+        $req_modif_description=$bdd->prepare('UPDATE infos_hebergement SET description=? WHERE id_profil=?');
+        $req_modif_description->execute(array($description,$_SESSION['id_profil']));
+    } else {
+        $req_insert_description=$bdd->prepare('INSERT INTO infos_hebergement (id_profil, description) VALUES (?,?)');
+        $req_insert_description->execute(array($_SESSION['id_profil'], $description));
+    }
+}
+
+//si on modifie la préférence
+if (isset($_POST['modif_preference'])) {
+    $preference=htmlspecialchars($_POST['preference']);
+    //mettre une variable pour savoir s'il s'agit de modifier (update) ou insérer (insert)
+    if ($_POST['modif_preference']) {
+        $req_modif_preference=$bdd->prepare('UPDATE infos_hebergement SET preference=? WHERE id_profil=?');
+        $req_modif_preference->execute(array($preference,$_SESSION['id_profil']));
+    } else {
+        $req_insert_preference=$bdd->prepare('INSERT INTO infos_hebergement (id_profil, preference) VALUES (?,?)');
+        $req_insert_preference->execute(array($_SESSION['id_profil'], $preference));
+    }
+}
+
+//si on ajoute des dispos
 if (isset($_POST['ajout_dispo'])){
     $ajd=date('Y-m-d');
     $date_debut=htmlspecialchars($_POST['date_debut']);
