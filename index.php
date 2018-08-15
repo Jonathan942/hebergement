@@ -57,8 +57,8 @@
             <p>Consulter la <a href="">charte</a> de Réseau Hospitalité</p>
         </div>
 
-        <h2>Vos informations personnelles : </h2>
-        <button class="btn" data-toggle="collapse" data-target="#modif_infos">Modifier mes données de contact</button>
+        <h2>Vos informations : </h2>
+        <button class="btn btn-primary" data-toggle="collapse" data-target="#modif_infos">Données de contact</button>
         <form method="post" action="modification_profil.php" class="collapse" id="modif_infos">
             <fieldset>
                 <div class="form-group">
@@ -74,46 +74,44 @@
                     <input type="tel" name="telephone" id="telephone" class="form-control" placeholder="" value="<?php echo $infos['telephone']; ?>" maxlength="45" required=""/>
                 </div>
                 <button type="submit" name="modif_profil" value="<?php echo $_SESSION['id_profil'];?>" class="btn">Mettre à jour mon profil</button>
+  
+                <div class="form-group">
+                    <label for="nouvelle_orga" class="">Vos organisations :</label>
+                    <div class="input-group">
+                        <input list="orgas" type="text" id="nouvelle_orga" name="nouvelle_orga" class="form-control" placeholder="Ajouter une nouvelle organisation" maxlength="45">
+                        <datalist id="orgas">
+                        <!-- installer safari pour voir comment apparaît le select car safari ne prend pas en charge datalist / puis voir si différence dans le traitement modification ? -->
+                        <select name="choix_orga" id="choix_orga">
+                        <?php foreach ($_SESSION['all_orgas'] as $nom_orga) {?>
+                            <option value="<?php echo $nom_orga;?>"></option>
+                        <?php } ?>
+                        </select>
+                        </datalist>
+                        <div class="input-group-btn">
+                            <button type="submit" class="btn" name="ajout">Ajouter</button>
+                        </div>
+                    </div>
+
+                    <?php if (isset($_SESSION['orgas_appartenance'])) {
+                    foreach ($_SESSION['orgas_appartenance'] as $id_orga_appartenance => $nom_orga_appartenance) { ?>
+                    <div class="input-group">
+                        <p class="form-control"><?php echo $nom_orga_appartenance;?></p>
+                        <div class="input-group-btn">
+                            <button type="submit" name="suppr" class="btn" value="<?php echo $id_orga_appartenance; ?>">&times;</button>
+                        </div>
+                    </div>                                
+                    <?php }
+                    } ?>
+                </div>
+                <?php
+                // affichage de l'éventuelle erreur lors du traitement de la modification (à intégrer dans le html)
+                if (isset($_SESSION['erreur_modif'])){
+                    echo $_SESSION['erreur_modif'];
+                    unset($_SESSION['erreur_modif']);
+                }  ?>
             </fieldset>
         </form>
-        <button class="btn" data-toggle="collapse" data-target="#modif_orga">Modifier mes organisations</button>
-        <form method="post" action="modification_profil.php" class="collapse" id="modif_orga">
-            <div class="form-group">
-                <label for="nouvelle_orga" class="">Vos organisations :</label>
-                <div class="input-group">
-                    <input list="orgas" type="text" id="nouvelle_orga" name="nouvelle_orga" class="form-control" placeholder="Ajouter une nouvelle organisation" maxlength="45">
-                    <datalist id="orgas">
-                    <!-- installer safari pour voir comment apparaît le select car safari ne prend pas en charge datalist / puis voir si différence dans le traitement modification ? -->
-                    <select name="choix_orga" id="choix_orga">
-                    <?php foreach ($_SESSION['all_orgas'] as $nom_orga) {?>
-                        <option value="<?php echo $nom_orga;?>"></option>
-                    <?php } ?>
-                    </select>
-                    </datalist>
-                    <div class="input-group-btn">
-                        <button type="submit" class="btn" name="ajout">Ajouter</button>
-                    </div>
-                </div>
-
-                <?php if (isset($_SESSION['orgas_appartenance'])) {
-                foreach ($_SESSION['orgas_appartenance'] as $id_orga_appartenance => $nom_orga_appartenance) { ?>
-                <div class="input-group">
-                    <p class="form-control"><?php echo $nom_orga_appartenance;?></p>
-                    <div class="input-group-btn">
-                        <button type="submit" name="suppr" class="btn" value="<?php echo $id_orga_appartenance; ?>">&times;</button>
-                    </div>
-                </div>                                
-                <?php }
-                } ?>
-            </div>
-            <?php
-            // affichage de l'éventuelle erreur lors du traitement de la modification (à intégrer dans le html)
-            if (isset($_SESSION['erreur_modif'])){
-                echo $_SESSION['erreur_modif'];
-                unset($_SESSION['erreur_modif']);
-            }  ?>
-        </form>
-        <button class="btn" data-toggle="collapse" data-target="#modif_mdp">Modifier mon mot de passe</button>
+        <button class="btn btn-primary" data-toggle="collapse" data-target="#modif_mdp">Mot de passe</button>
         <form method="post" action="modification_profil.php" class="collapse" id="modif_mdp">
             <div class="form-group">
                 <label for="mdp" class="">Votre mot de passe :</label>
@@ -215,7 +213,7 @@
         </form>
 
         <h2>Pour inscrire une nouvelle personne : </h2>
-        <button class="btn" data-toggle="collapse" data-target="#ajout">Parrainer une nouvelle personne</button>
+        <button class="btn btn-primary" data-toggle="collapse" data-target="#ajout">Parrainer une nouvelle personne</button>
         <form method="post" action="modification_profil.php" class="collapse" id="ajout">
             <fieldset>
                 <div class="form-group">
