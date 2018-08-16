@@ -6,22 +6,23 @@ include_once('connexion_sql.php');
 // si on arrive via le bouton "mettre à jour mon profil" 
 if (isset($_POST['modif_profil']) OR isset($_POST['ajout_profil'])){ 
     if(isset($_POST['modif_profil'])){
-        $titre_erreur='erreur_modif';
+        $titre_erreur='modification';
     } else {
-        $titre_erreur='erreur_ajout';
+        $titre_erreur='ajout';
     }
     $infos=array();
     foreach ($_POST as $cle=> $element){
         if (!empty($element)){
             $infos[$cle]=htmlspecialchars($element);
-        } else {
-            $_SESSION[$titre_erreur]="il manque des informations";
         }
     }
-    
+    //vérification nom/pseudo
+    if (!isset($infos['nom'])){
+        $erreur="Veuillez mettre votre nom ou un pseudo";
+    }
     // vérification format email
-    if (!preg_match("#^[a-z0-9._-]+@[a-z0-9._-]{2,}\.[a-z]{2,4}$#", $infos['email'])){
-        $_SESSION[$titre_erreur]="email invalide";
+    if (!isset($infos['email']) OR !preg_match("#^[a-z0-9._-]+@[a-z0-9._-]{2,}\.[a-z]{2,4}$#", $infos['email'])){
+        $erreur="format de l'email invalide";
     } else {
         $infos['email']=strtolower($infos['email']);
         //vérification que l'email ne soit pas déjà enregistré dans une autre entrée de la bdd
@@ -34,22 +35,24 @@ if (isset($_POST['modif_profil']) OR isset($_POST['ajout_profil'])){
         }
         $verif=$req_verif->fetch();
         if ($verif['nb_email']!=0) {
-            $_SESSION[$titre_erreur]="cet email correspond à une personne déjà inscrite";
+            $erreur="Cet email correspond à une personne déjà inscrite";
         }
     }
     // vérification format téléphone
     $caractere_a_suppr=array("-", ".", " ");
-    $infos['telephone']=str_replace($caractere_a_suppr, "", $infos['telephone']);
-    if (!preg_match("#^0[1-8][0-9]{8}$#", $infos['telephone'])) {
-        $_SESSION[$titre_erreur]="téléphone invalide";
+    if(isset($infos['telephone'])){
+        $infos['telephone']=str_replace($caractere_a_suppr, "", $infos['telephone']);
+    }
+    if (!isset($infos['telephone']) OR !preg_match("#^0[1-8][0-9]{8}$#", $infos['telephone'])) {
+        $erreur="téléphone invalide";
     }
     if (isset($_POST['ajout_profil'])) {
         // vérification mot de passe (faire une fonction car ça revient plus bas)
         if (empty($infos['mdp2'])){
-            $_SESSION[$titre_erreur]="Veuillez confirmer le mot de passe";
+            $erreur="Veuillez confirmer le mot de passe";
         } else {
             if($infos['mdp']!=$infos['mdp2']){
-            $_SESSION[$titre_erreur]="Les 2 mots de passe ne sont pas identiques";
+            $erreur="Les 2 mots de passe ne sont pas identiques";
             } else {
                 //hashage du mdp
                 $infos['mdp'] = password_hash($infos['mdp'], PASSWORD_DEFAULT);
@@ -58,10 +61,10 @@ if (isset($_POST['modif_profil']) OR isset($_POST['ajout_profil'])){
         }
     }
     //modification ou ajout des infos dans la bdd si pas d'erreur
-    if (!isset($_SESSION[$titre_erreur])) {
+    if (!isset($erreur)) {
         if (isset($_POST['modif_profil'])) {
-            $req_modif=$bdd->prepare('UPDATE profil SET nom_prenom=:nom, telephone=:telephone, email=:email WHERE id_profil=:modif_profil');
-            $req_modif->execute($infos);
+            $req_modif=$bdd->prepare('UPDATE profil SET nom_prenom=?, telephone=?, email=? WHERE id_profil=?');
+            $req_modif->execute(array($infos['nom'],$infos['telephone'],$infos['email'],$infos['modif_profil']));
         } else {
             unset($infos['ajout_profil']);
             $req_insert=$bdd->prepare('INSERT INTO profil (nom_prenom, telephone, email, mdp) VALUES (:nom,:telephone,:email,:mdp)');
@@ -73,7 +76,7 @@ if (isset($_POST['modif_profil']) OR isset($_POST['ajout_profil'])){
 /* s'il s'agit de modifier les organisations d'appartenance */
 
 // si on arrive via le bouton "ajouter" ou celui "mette à jour mon profil"
-if (isset($_POST['ajout']) OR isset($_POST['modif_profil'])){
+if (isset($_POST['ajout_orga']) OR isset($_POST['modif_profil'])){
     if (isset($_POST['nouvelle_orga']) AND preg_match("#\\S#", $_POST['nouvelle_orga'])) {
         $nom_nouv_orga = htmlspecialchars($_POST['nouvelle_orga']);
         // vérification que l'organisation ne soit pas déjà associée à ce profil
@@ -91,20 +94,21 @@ if (isset($_POST['ajout']) OR isset($_POST['modif_profil'])){
     }
 }
 // si on arrive via le bouton "X"
-if (isset($_POST['suppr'])){
+if (isset($_POST['suppr_orga'])){
     $req_suppr_orga=$bdd->prepare('DELETE FROM jonction_profil_organisation WHERE id_orga = ?');
-    $req_suppr_orga->execute(array($_POST['suppr']));
+    $req_suppr_orga->execute(array($_POST['suppr_orga']));
 }
 
 /* s'il s'agit de modifier le mot de passe */
 if(isset($_POST['modif_mdp'])){
+    $titre_erreur="modification";
     if(empty($_POST['mdp']) OR empty($_POST['mdp2'])){
-        $_SESSION['erreur_mdp']="Veuillez remplir 2 fois le mot de passe";
+        $erreur="Veuillez remplir 2 fois le mot de passe";
     } else {
         $mdp=htmlspecialchars($_POST['mdp']);
         $mdp2=htmlspecialchars($_POST['mdp2']);
         if($mdp!=$mdp2){
-            $_SESSION['erreur_mdp']="Les 2 mots de passe ne sont pas identiques";
+            $erreur="Les 2 mots de passe ne sont pas identiques";
         } else {
             //hashage du mdp
             $mdp_hash = password_hash($mdp, PASSWORD_DEFAULT);
@@ -113,7 +117,13 @@ if(isset($_POST['modif_mdp'])){
         }
     }
 }
+$redirection='Location: ../hebergement';
+if (isset($erreur)){
+    $redirection=$redirection.'?'.$titre_erreur.'='.$erreur;
+} else {
+    $redirection=$redirection.'?succes=Vos informations ont bien été prises en compte';
+}
 
-header('Location: /www/hebergement');
+header($redirection);
 exit();
 ?>

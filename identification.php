@@ -6,7 +6,7 @@ if (isset($_POST['email']) AND (isset($_POST['mdp']))){
     $email=strtolower($email);
     $mdp=htmlspecialchars($_POST['mdp']);
     if (!preg_match("#^[a-z0-9._-]+@[a-z0-9._-]{2,}\.[a-z]{2,4}$#",$email)) {
-        $_SESSION['erreur_identif']="l'adresse email est invalide";
+        $erreur="L'adresse email est invalide";
     } else {
         include_once('connexion_sql.php');
         //on vérifie que le mdp correspond au mdp hashé stocké:
@@ -15,18 +15,22 @@ if (isset($_POST['email']) AND (isset($_POST['mdp']))){
         $identification=$recup_mdp->fetch();
 
         if (empty($identification)){
-            $_SESSION['erreur_identif']="erreur d'email";
+            $erreur="Erreur d'email";
         } else {
             $passVerif = password_verify($mdp, $identification['mdp']);
             if (!$passVerif)
             {
-                $_SESSION['erreur_identif']="erreur de mot de passe";
+                $erreur="Erreur de mot de passe";
             } else {
                 $_SESSION['id_profil']=$identification['id_profil'];
             }
         } 
     }
 }
-header('Location: /www/hebergement');
+$redirection='Location: ../hebergement';
+if (isset($erreur)){
+    $redirection=$redirection.'?identification='.$erreur;
+}
+header($redirection);
 exit();
 ?>

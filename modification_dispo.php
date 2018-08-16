@@ -42,11 +42,11 @@ if (isset($_POST['ajout_dispo'])){
 
     //vérification que la date_début est >= à ajourd'hui et que date_fin >= à date_debut   
     if ((strtotime($date_debut)-strtotime($ajd))<0){
-        $_SESSION['erreur_dispo']="la date choisie est déjà passée";
+        $erreur="date de début déjà passée";
     } else {
         $nb_nuits=(strtotime($date_fin)-strtotime($date_debut))/(60*60*24);
         if ($nb_nuits<1) {
-            $_SESSION['erreur_dispo']="la date de fin choisie est antérieure à la date de début";  
+            $erreur="erreur date de fin";  
         } else {
             $nb_places=htmlspecialchars($_POST['nb_places']);
             if (!is_numeric($nb_places)) {
@@ -65,7 +65,14 @@ if (isset($_POST['suppr_dispo'])){
     $req_suppr_dispo->execute(array($id_dispos));
 }
 
-header('Location: /www/hebergement');
+$redirection='Location: ../hebergement';
+if (isset($erreur)){
+    $redirection=$redirection.'?disponibilité='.$erreur;
+} else {
+    $redirection=$redirection.'?succes=Vos informations ont bien été prises en compte';
+}
+
+header($redirection);
 exit();
 
 ?>
